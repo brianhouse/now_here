@@ -35,12 +35,11 @@ def search(page):
     tags = q.split(',')
     anti_tags = [tag[1:] for tag in tags if tag[0] == '-']
     tags = [tag for tag in tags if tag[0] != '-']
-    print(tags)
-    print(anti_tags)
     match = {'$and': [{'tags': {'$all': tags}}, {'tags': {'$nin': anti_tags}}]}
     entries = list(db.entries.find(match, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).limit(100))
     expand(entries)    
-    return render_template("page.html", entries=entries, places=hash_to_name)
+    search_string = " ".join(tags) + (" -" + " -".join(anti_tags) if len(anti_tags) else "")
+    return render_template("page.html", entries=entries, places=hash_to_name, search_string=search_string)
 
 @app.route("/entries/<string:entry_id>") 
 def entries(entry_id):

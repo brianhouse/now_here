@@ -46,3 +46,8 @@ so you test locally, same as tornado, only difference is you launch a different 
 brew services restart nginx
 brew services restart mongodb
 
+
+### detritus
+
+var tags = $('#search').attr('placeholder', 'tags..');
+onFocus="$('#search').val('');

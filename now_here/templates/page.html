@@ -67,7 +67,7 @@
             return tags.replace(/,/g, ' ').replace(/[,\/#!$%\^&\*;:{}=\`~()"']/g,"").replace(/\./g, '_').replace(/ /g, ',').toLowerCase();
         }
 
-        $(document).ready(function() {                   
+        $(document).ready(function() {           
             $('.entry_content').autogrow();
             function GetLocation(location) {
                 var lon = location.coords.longitude;
@@ -108,7 +108,7 @@
 <body>
     <div id="main">        
         <div id="searchbar">
-            <a href="/">NEW</a> - <a href="/recent">RECENT</a> - SEARCH: <input id="search" type="text" onFocus="$('#search').val('');" onChange="search($('#search').val());" value="{% if search_string != None %}{{ search_string }}{% endif %}" />
+            <a href="/">NEW</a> - <a href="/recent">RECENT</a> - SEARCH: <input id="search" type="text" onChange="search($('#search').val());" value="{% if search_string != None %}{{ search_string }}{% endif %}" />
         </div>
         <div id="content">
         {% include "content.html" %}
