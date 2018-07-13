@@ -66,12 +66,16 @@
             var tags = tokens.filter(function(element, index, array) {
                 return (index % 2 === 0);
             });
+            tags = fix_tags(tags);            
             var full_text = tokens.filter(function(element, index, array) {
                 return (index % 2 === 1);
             });
-            full_text = '"' + full_text[0] + '"';
-            tags = fix_tags(tags);            
-            if (tags.length > 0) full_text = ',' + full_text;
+            if (full_text.length) {
+                full_text = '"' + full_text[0] + '"';
+                if (tags.length > 0) full_text = ',' + full_text;
+            } else {
+                full_text = "";
+            }            
             window.location = "/search/0?q=" + tags + full_text;
         }
 

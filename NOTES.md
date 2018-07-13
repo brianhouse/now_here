@@ -1,9 +1,16 @@
 ### todo
 fulltext search
 tag cloud
+pagination
 
+routes:
+/   recent
+/id entry
+/?q= recent
+/?q=search search
 
-ok, so if terms are in quotes, they are full text?
+get rid of 'recent' 'entries' and 'search'
+but how does that work with flask?
 
 
 ### install

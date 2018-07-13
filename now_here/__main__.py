@@ -36,11 +36,18 @@ def search(page):
     tags = [tag for tag in tokens if len(tag) and tag[0] not in '-"' and len(tag)]
     anti_tags = [tag[1:] for tag in tokens if len(tag) and tag[0] == '-' and len(tag)]
     full_text = [tag.strip('"') for tag in tokens if len(tag) and tag[0] == '"' and len(tag) > 2]
-    full_text = '"%s"' % full_text[0] if len(full_text) else ""
-    match = {'$and': [{'tags': {'$all': tags}}, {'tags': {'$nin': anti_tags}}]}
+    full_text = full_text[0] if len(full_text) else None
+    match = {'$and': []}
+    if len(tags):
+        match['$and'].append({'tags': {'$all': tags}})
+    if len(anti_tags):
+        match['$and'].append({'tags': {'$nin': anti_tags}})
+    if full_text:
+        match['$and'].append({"$text": {"$search": full_text}})        
+    app.logger.debug(match)
     entries = list(db.entries.find(match, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).limit(100))
     expand(entries)    
-    search_string = " ".join(tags) + (" -" + " -".join(anti_tags) if len(anti_tags) else "") + " " + full_text
+    search_string = " ".join(tags) + (" -" + " -".join(anti_tags) if len(anti_tags) else "") + (' "' + full_text + '"' if full_text else "")
     return render_template("page.html", entries=entries, places=hash_to_name, search_string=search_string.strip())
 
 @app.route("/entries/<string:entry_id>") 
