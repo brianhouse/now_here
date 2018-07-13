@@ -10,7 +10,7 @@ def create_or_update(data):
     app.logger.debug(data)
     try:
         entry_id = data['entry_id']
-        tags = list(set(tag.lower().replace('.', '_') for tag in data['tags'].split()))
+        tags = list(set(tag.lower().replace('.', '_') for tag in data['tags'].split(',')))
         content = str(data['content']).strip()
         location = data['location']
         if location is None or not len(location.strip()):
@@ -38,7 +38,7 @@ def create_or_update(data):
                     location = name_to_hash[value] if value in name_to_hash else value
             tags[i] = None
         else:
-            tags[i] = depunctuate(tag, exclude='_')
+            tags[i] = depunctuate(tag, exclude='_').lower()
     tags = [tag for tag in tags if tag is not None]
 
     app.logger.debug(entry_id)

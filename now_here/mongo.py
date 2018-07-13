@@ -86,4 +86,7 @@ got it. great.
 
 tags, content, has_image, location, date
 
+#https://stackoverflow.com/questions/6940503/mongodb-get-documents-by-tags
+
+
 """

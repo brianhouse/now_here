@@ -25,13 +25,13 @@
                 url: '/update',                
                 data: { entry_id: entry_id,
                         location: $('#location_' + entry_id).val(), 
-                        tags: tags, 
+                        tags: fix_tags(tags), 
                         date: $('#date_' + entry_id).val(),
                         content: content
                         },
                 success: function (data) {                
                     if (entry_id == "new") {
-                        window.location = "/search/0?q=" + $('#tags_' + entry_id).val().replace('.', '_').replace('-', '').toLowerCase();
+                        search($('#tags_' + entry_id).val());
                     } else {
                         window.location.reload();
                     }
@@ -59,28 +59,12 @@
             }
         }
 
-        function search (st) {
-            page = 1;
-            search_term = st;
-            if (search_term != 'recent') {
-                $('#search').val(search_term);
-            } else {
-                $('#search').val('');
-            }
-            $.ajax({
-                type: 'GET',
-                url: 'index.py',                
-                data: { q: search_term,
-                        page: page
-                        },
-                success: function (data) {
-                    $('#content').html(data);
-                    $('.entry_content').autogrow();
-                },
-                error: function (data) {
+        function search (tags) {
+            window.location = "/search/0?q=" + fix_tags(tags);
+        }
 
-                }
-            });                             
+        function fix_tags (tags) {
+            return tags.replace(/,/g, ' ').replace(/[,\/#!$%\^&\*;:{}=\`~()"']/g,"").replace(/\./g, '_').replace(/ /g, ',').toLowerCase();
         }
 
         $(document).ready(function() {                   

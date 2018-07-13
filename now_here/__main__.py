@@ -32,8 +32,15 @@ def recent():
 @app.route("/search/<int:page>") 
 def search(page):
     q = request.args['q'] if 'q' in request.args else ''
-    app.logger.debug(q)
-    return "Search %s %s" % (page, q)
+    tags = q.split(',')
+    anti_tags = [tag[1:] for tag in tags if tag[0] == '-']
+    tags = [tag for tag in tags if tag[0] != '-']
+    print(tags)
+    print(anti_tags)
+    match = {'$and': [{'tags': {'$all': tags}}, {'tags': {'$nin': anti_tags}}]}
+    entries = list(db.entries.find(match, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).limit(100))
+    expand(entries)    
+    return render_template("page.html", entries=entries, places=hash_to_name)
 
 @app.route("/entries/<string:entry_id>") 
 def entries(entry_id):
