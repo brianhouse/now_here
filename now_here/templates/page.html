@@ -69,9 +69,10 @@
             var full_text = tokens.filter(function(element, index, array) {
                 return (index % 2 === 1);
             });
-            full_text = full_text[0];
-            tags = fix_tags(tags);
-            window.location = "/search/0?q=" + tags + ' "' + full_text + '"';
+            full_text = '"' + full_text[0] + '"';
+            tags = fix_tags(tags);            
+            if (tags.length > 0) full_text = ',' + full_text;
+            window.location = "/search/0?q=" + tags + full_text;
         }
 
         function fix_tags (tags) {

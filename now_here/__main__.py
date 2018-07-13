@@ -32,14 +32,16 @@ def recent():
 @app.route("/search/<int:page>") 
 def search(page):
     q = request.args['q'] if 'q' in request.args else ''
-    tags = q.split(',') if len(q) else []
-    anti_tags = [tag[1:] for tag in tags if tag[0] == '-' and len(tag)]
-    tags = [tag for tag in tags if tag[0] != '-' and len(tag)]
+    tokens = q.split(',') if len(q) else []
+    tags = [tag for tag in tokens if len(tag) and tag[0] not in '-"' and len(tag)]
+    anti_tags = [tag[1:] for tag in tokens if len(tag) and tag[0] == '-' and len(tag)]
+    full_text = [tag.strip('"') for tag in tokens if len(tag) and tag[0] == '"' and len(tag) > 2]
+    full_text = '"%s"' % full_text[0] if len(full_text) else ""
     match = {'$and': [{'tags': {'$all': tags}}, {'tags': {'$nin': anti_tags}}]}
     entries = list(db.entries.find(match, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).limit(100))
     expand(entries)    
-    search_string = " ".join(tags) + (" -" + " -".join(anti_tags) if len(anti_tags) else "")
-    return render_template("page.html", entries=entries, places=hash_to_name, search_string=search_string)
+    search_string = " ".join(tags) + (" -" + " -".join(anti_tags) if len(anti_tags) else "") + " " + full_text
+    return render_template("page.html", entries=entries, places=hash_to_name, search_string=search_string.strip())
 
 @app.route("/entries/<string:entry_id>") 
 def entries(entry_id):
