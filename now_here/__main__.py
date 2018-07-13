@@ -40,6 +40,7 @@ def entries(entry_id):
     entry = db.entries.find_one({'_id': ObjectId(entry_id)})
     if entry is None:
         return "404 NOT FOUND", 404
+    print(entry)
     entries = [entry]
     expand(entries)
     return render_template("page.html", entries=entries, places=hash_to_name)

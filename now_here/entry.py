@@ -50,15 +50,21 @@ def create_or_update(data):
 
     if entry_id == "new":
         try:
-            entry_id = db.entries.insert({'t': t, 'location': location, 'tags': tags, 'content': content, 'has_image': has_image})            
+            entry_id = db.entries.insert({'t': t, 'location': location, 'tags': tags, 'content': content, 'has_image': has_image, 'patches': []})            
             app.logger.debug(entry_id)
         except Exception as e:
             app.logger.error(e)
             return False, e
 
     else:
+        update = {'$set': {'tags': tags, 'content': content}}
+        original_content = db.entries.find_one({'_id': ObjectId(entry_id)})['content']
+        if content != original_content:
+            patch = (t, get_reverse_patch(original_content, content))
+            update['$push'] = {'patches': patch}
         try:
-            db.entries.update_one({'_id': ObjectId(entry_id)}, {'$set': {'tags': tags, 'content': content}})
+            print(update)
+            db.entries.update_one({'_id': ObjectId(entry_id)}, update)
         except Exception as e:
             app.logger.error(e)
             return False, e
@@ -93,7 +99,7 @@ def parse_date(string):
     """We are purposefully ignoring timezone and storing as if everything was UTC"""
     try:
         dt = parser.parse(string)
-        t = calendar.timegm(dt.timetuple())        
+        t = calendar.timegm(dt.timetuple())
     except ValueError as e:
         app.logger.error(e)
         t = None
