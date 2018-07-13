@@ -1,6 +1,10 @@
 ### todo
-search
+fulltext search
 tag cloud
+
+
+ok, so if terms are in quotes, they are full text?
+
 
 ### install
 
@@ -51,3 +55,7 @@ brew services restart mongodb
 
 var tags = $('#search').attr('placeholder', 'tags..');
 onFocus="$('#search').val('');
+
+https://gist.github.com/cpatrick/5719077
+search_this_string = "stuff"
+print collection.find({"$text": {"$search": search_this_string}}).count()

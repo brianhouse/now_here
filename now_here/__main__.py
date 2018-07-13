@@ -32,9 +32,9 @@ def recent():
 @app.route("/search/<int:page>") 
 def search(page):
     q = request.args['q'] if 'q' in request.args else ''
-    tags = q.split(',')
-    anti_tags = [tag[1:] for tag in tags if tag[0] == '-']
-    tags = [tag for tag in tags if tag[0] != '-']
+    tags = q.split(',') if len(q) else []
+    anti_tags = [tag[1:] for tag in tags if tag[0] == '-' and len(tag)]
+    tags = [tag for tag in tags if tag[0] != '-' and len(tag)]
     match = {'$and': [{'tags': {'$all': tags}}, {'tags': {'$nin': anti_tags}}]}
     entries = list(db.entries.find(match, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).limit(100))
     expand(entries)    

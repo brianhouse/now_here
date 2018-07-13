@@ -59,12 +59,30 @@
             }
         }
 
-        function search (tags) {
-            window.location = "/search/0?q=" + fix_tags(tags);
+        function search (search_term) {
+            // how to separate fulltext from tags?
+            // split on " and every second term is fulltext
+            var tokens = search_term.split('"');
+            var tags = tokens.filter(function(element, index, array) {
+                return (index % 2 === 0);
+            });
+            var full_text = tokens.filter(function(element, index, array) {
+                return (index % 2 === 1);
+            });
+            full_text = full_text[0];
+            tags = fix_tags(tags);
+            window.location = "/search/0?q=" + tags + ' "' + full_text + '"';
         }
 
         function fix_tags (tags) {
-            return tags.replace(/,/g, ' ').replace(/[,\/#!$%\^&\*;:{}=\`~()"']/g,"").replace(/\./g, '_').replace(/ /g, ',').toLowerCase();
+            tags = "" + tags;
+            tags = tags.replace(/,/g, ' ').replace(/[,\/#!$%\^&\*;:{}=\`~()']/g,"").replace(/\./g, '_').replace(/ /g, ',').toLowerCase();
+            tags = tags.split(',');
+            tags = tags.filter(function(tag) { 
+              return tag.length > 0;
+            });              
+            tags = tags.join(',');
+            return tags;
         }
 
         $(document).ready(function() {           
