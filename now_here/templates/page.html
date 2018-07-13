@@ -1,0 +1,135 @@
+<!doctype html> 
+<html lang="en"> 
+<head>
+    <title>now/here</title>
+    <meta charset="utf-8"/>    
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+    <script type="text/javascript" src="/static/js/jquery-1.7.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.autogrow-textarea.js"></script>
+    <script type="text/javascript" src="/static/js/geohash.js"></script>  	        
+    <script type="text/javascript">
+
+        var places = {{ places | safe }};
+        var page = 1;
+        var search_term = null;
+
+        function updateEntry (entry_id) {
+            console.log("updateEntry [" + entry_id + "]")
+            var content = $('#content_' + entry_id).val();
+            var tags = $('#tags_' + entry_id).val();
+            if (!content.length || !tags.length) {
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/update',                
+                data: { entry_id: entry_id,
+                        location: $('#location_' + entry_id).val(), 
+                        tags: tags, 
+                        date: $('#date_' + entry_id).val(),
+                        content: content
+                        },
+                success: function (data) {                
+                    if (entry_id == "new") {
+                        window.location = "/search/0?q=" + $('#tags_' + entry_id).val().replace('.', '_').replace('-', '').toLowerCase();
+                    } else {
+                        window.location.reload();
+                    }
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+        }
+
+        function deleteEntry (entry_id) {
+            console.log("deleteEntry")
+            if (confirm("Really delete?")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/delete', 
+                    data: { entry_id: entry_id },
+                    success: function (data) {        
+                        window.location.reload();
+                    },
+                    error: function (data) {
+                        alert(data.responseText);
+                    }
+                });
+            }
+        }
+
+        function search (st) {
+            page = 1;
+            search_term = st;
+            if (search_term != 'recent') {
+                $('#search').val(search_term);
+            } else {
+                $('#search').val('');
+            }
+            $.ajax({
+                type: 'GET',
+                url: 'index.py',                
+                data: { q: search_term,
+                        page: page
+                        },
+                success: function (data) {
+                    $('#content').html(data);
+                    $('.entry_content').autogrow();
+                },
+                error: function (data) {
+
+                }
+            });                             
+        }
+
+        $(document).ready(function() {                   
+            $('.entry_content').autogrow();
+            function GetLocation(location) {
+                var lon = location.coords.longitude;
+                var lat = location.coords.latitude;
+                var geohash = encodeGeoHash(lat, lon);                        
+                $('#location_new').val(geohash);
+                var place = places[geohash.substr(0, 4)];
+                if (place == undefined) place = geohash;
+                p = "<a target='_new' href='http://maps.google.com/?q=" + lat + "," + lon + "'>" + place + "</a>";
+                $('#display_location_new').html(p);
+            }                
+            navigator.geolocation.getCurrentPosition(GetLocation);                    
+        });        
+
+        $(window).scroll(function(){
+            if ($(window).scrollTop() == $(document).height() - $(window).height()) {                
+                page += 1;
+                $.ajax({
+                    type: 'GET',
+                    url: 'index.py',                
+                    data: { q: search_term,
+                            page: page
+                            },
+                    success: function (data) {
+                        $("#more").replaceWith(data)                        
+                        $('.entry_content').autogrow();
+                    },
+                    error: function (data) {
+                        // alert(data.responseText);
+                    }
+                });                             
+            }
+        });        
+
+    </script>
+</head>
+
+<body>
+    <div id="main">        
+        <div id="searchbar">
+            <a href="/">NEW</a> - <a href="/recent">RECENT</a> - SEARCH: <input id="search" type="text" onFocus="$('#search').val('');" onChange="search($('#search').val());" value="{% if search_string != None %}{{ search_string }}{% endif %}" />
+        </div>
+        <div id="content">
+        {% include "content.html" %}
+        </div>
+    </div>
+
+</body>
+</html>

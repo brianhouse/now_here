@@ -1,0 +1,57 @@
+hash_to_name:
+    dqcx: Baltimore
+    7h2y: Belo Horizonte
+    dr7z: Berkshires
+    u33d: Berlin
+    drt2: Boston
+    9qe1: California
+    u3bu: Copenhagen
+    9xj5: Denver
+    9xj7: Denver
+    9xje: Denver
+    9xj4: Denver
+    9xj6: Denver
+    9xjd: Denver
+    9xj1: Denver
+    9xj3: Denver
+    9xj9: Denver
+    u01w: France
+    u628: Gothenburg    
+    7jf8: Lencois
+    dp9k: Milwaukee
+    7nyz: Natal    
+    dr5r: NYC
+    dr5q: NYC
+    dr72: NYC
+    drmj: Providence
+    6gyf: Sao Paulo
+    u6sc: Stockholm
+    u6tq: Sweden
+    9q5f: Pasadena
+    ud6f: Maajaam
+    ud9d: Tallinn
+
+name_to_hash:
+    Baltimore: dqcx88sende4
+    Belo Horizonte: 7h2y8jugj08h
+    Berkshires: dr7zzknp5vjn
+    Berlin: u33dc1f0j1nq
+    Boston: drt2yzpgerb9
+    California: 9qe14x68bkz8
+    Copenhagen: u3butzxbz2xq
+    Denver: 9xj65423r55k
+    France: u01wfrkp806c
+    Gothenburg: u62823xde3p4
+    Lencois: 7jf8d451wvzf
+    Milwaukee: dp9kzdury8ym
+    Natal: 7nyznc0htqfm 
+    NYC: dr5regy6rc6y 
+    Providence: drmjyvyf2kem
+    Sao Paulo: 6gyf49n9kyb9 
+    Stockholm: u6sce0d2nfjh
+    Sweden: u6tq01zzcj9g
+    Pasadena: 9q5fqbypq8js
+    Maajaam: ud6fs2f5bp8p
+    Tallinn: ud9d48fkznwj
+    
+default_name: Providence
