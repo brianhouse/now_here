@@ -10,7 +10,7 @@
     <script type="text/javascript">
 
         var places = {{ places | safe }};
-        var page = 1;
+        var page = 0;
         var search_term = null;
 
         function updateEntry (entry_id) {
@@ -59,7 +59,7 @@
             }
         }
 
-        function search (search_term) {
+        function search (search_term, page=0) {
             // how to separate fulltext from tags?
             // split on " and every second term is fulltext
             var tokens = search_term.split('"');
@@ -76,12 +76,12 @@
             } else {
                 full_text = "";
             }            
-            window.location = "/search/0?q=" + tags + full_text;
+            window.location = "/search/" + page + "?q=" + tags + full_text;
         }
 
         function fix_tags (tags) {
             tags = "" + tags;
-            tags = tags.replace(/,/g, ' ').replace(/[,\/#!$%\^&\*;:{}=\`~()']/g,"").replace(/\./g, '_').replace(/ /g, ',').toLowerCase();
+            tags = tags.replace(/,/g, ' ').replace(/[,\/#!?@+|[\]><$%\^&\*;:{}=\`~()']/g,"").replace(/\./g, '_').replace(/ /g, ',').toLowerCase();
             tags = tags.split(',');
             tags = tags.filter(function(tag) { 
               return tag.length > 0;

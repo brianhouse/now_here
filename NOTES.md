@@ -1,7 +1,9 @@
 ### todo
-fulltext search
+fix route
+pagination -- that actually does have to be a partial
 tag cloud
-pagination
+consolidate code
+
 
 routes:
 /   recent
