@@ -1,3 +1,8 @@
+### todo
+verify timestamps make sense, seems like we're on NYC time or something
+search
+tag cloud
+
 ### install
 
 brew install uwsgi

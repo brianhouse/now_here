@@ -18,7 +18,7 @@ def create_or_update(data):
         location = name_to_hash[location] if location in name_to_hash else location
         image = data['image'] if 'image' in data else None
         has_image = int(image is not None)
-        t = parse_date(data['date'])
+        t = parse_datestring(data['date'])
     except Exception as e:
         app.logger.error(e)
         return False, e    
@@ -31,7 +31,7 @@ def create_or_update(data):
                 facet, value = parts[0], parts[1]
                 if facet == 'date':
                     try:
-                        t = parse_date(value)
+                        t = parse_datestring(value)
                     except:
                         pass
                 elif facet == 'place':
@@ -60,7 +60,7 @@ def create_or_update(data):
         update = {'$set': {'tags': tags, 'content': content}}
         original_content = db.entries.find_one({'_id': ObjectId(entry_id)})['content']
         if content != original_content:
-            t = calendar.timegm(datetime.datetime.now().timetuple())
+            t = get_t()
             patch = (t, get_reverse_patch(original_content, content))
             update['$push'] = {'patches': patch}
         try:
@@ -75,10 +75,10 @@ def create_or_update(data):
 def expand(entries):
     for entry in entries:
         try:
-            entry['date'] = datetime.datetime.fromtimestamp(entry['t'])
+            entry['date'] = get_datestring(entry['t'])
             if 'patches' in entry:
                 for patch in entry['patches']:
-                    patch[0] = str(datetime.datetime.fromtimestamp(patch[0])).split(" ")[0]
+                    patch[0] = str(get_datestring(patch[0]))#.split(" ")[0]
             if 'location' in entry and entry['location'] is not None:    
                 place = hash_to_name[entry['location'][0:4]] if entry['location'][0:4] in hash_to_name else entry['location']
                 lonlat = geohash.decode(entry['location'])
@@ -90,6 +90,8 @@ def expand(entries):
             app.logger.error(e)
             app.logger.debug(entry)
 
+##            
+
 def depunctuate(s, exclude=None, replacement=''):
     p = string.punctuation
     if exclude:
@@ -98,7 +100,9 @@ def depunctuate(s, exclude=None, replacement=''):
     regex = re.compile('[%s]' % re.escape(p))
     return regex.sub(replacement, s) 
 
-def parse_date(string):
+##
+
+def parse_datestring(string):
     """We are purposefully ignoring timezone and storing as if everything was UTC"""
     try:
         dt = parser.parse(string)
@@ -107,6 +111,18 @@ def parse_date(string):
         app.logger.error(e)
         t = None
     return t
+
+def get_t(dt=None):
+    if not dt:
+        dt = datetime.datetime.now()
+    return calendar.timegm(dt.timetuple())
+
+def get_datestring(t=None):
+    if not t:
+        t = get_t()
+    return str(datetime.datetime.utcfromtimestamp(t))
+
+##    
 
 dmp = diff_match_patch.diff_match_patch()
 

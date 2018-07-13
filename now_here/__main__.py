@@ -10,7 +10,7 @@ with open(os.path.join(os.path.dirname(__file__), "places.yaml")) as f:
     hash_to_name = y['hash_to_name']
     name_to_hash = y['name_to_hash']
     default_name = y['default_name']
-from entry import create_or_update, expand, apply_reverse_patch
+from entry import create_or_update, expand, apply_reverse_patch, get_datestring
 
 @app.route("/")
 def main():
@@ -18,7 +18,7 @@ def main():
                 'tags': "",
                 'content': "",
                 'location': None, 
-                'date': str(datetime.datetime.now()).split('.')[0]
+                'date': get_datestring().split('.')[0]
                 }
     entries = [entry]    
     return render_template("page.html", entries=[entry], places=hash_to_name)
