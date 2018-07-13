@@ -60,10 +60,10 @@ def create_or_update(data):
         update = {'$set': {'tags': tags, 'content': content}}
         original_content = db.entries.find_one({'_id': ObjectId(entry_id)})['content']
         if content != original_content:
+            t = calendar.timegm(datetime.datetime.now().timetuple())
             patch = (t, get_reverse_patch(original_content, content))
             update['$push'] = {'patches': patch}
         try:
-            print(update)
             db.entries.update_one({'_id': ObjectId(entry_id)}, update)
         except Exception as e:
             app.logger.error(e)
@@ -76,6 +76,9 @@ def expand(entries):
     for entry in entries:
         try:
             entry['date'] = datetime.datetime.fromtimestamp(entry['t'])
+            if 'patches' in entry:
+                for patch in entry['patches']:
+                    patch[0] = str(datetime.datetime.fromtimestamp(patch[0])).split(" ")[0]
             if 'location' in entry and entry['location'] is not None:    
                 place = hash_to_name[entry['location'][0:4]] if entry['location'][0:4] in hash_to_name else entry['location']
                 lonlat = geohash.decode(entry['location'])

@@ -10,7 +10,7 @@ with open(os.path.join(os.path.dirname(__file__), "places.yaml")) as f:
     hash_to_name = y['hash_to_name']
     name_to_hash = y['name_to_hash']
     default_name = y['default_name']
-from entry import create_or_update, expand
+from entry import create_or_update, expand, apply_reverse_patch
 
 @app.route("/")
 def main():
@@ -25,7 +25,7 @@ def main():
 
 @app.route("/recent") 
 def recent():
-    entries = list(db.entries.find().sort([('t', DESCENDING)]).limit(100))
+    entries = list(db.entries.find(None, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).limit(100))
     expand(entries)
     return render_template("page.html", entries=entries, places=hash_to_name)
 
@@ -40,9 +40,14 @@ def entries(entry_id):
     entry = db.entries.find_one({'_id': ObjectId(entry_id)})
     if entry is None:
         return "404 NOT FOUND", 404
-    print(entry)
+    content = entry['content']
+    patches = entry['patches']
+    patches.sort(key=lambda x: x[0], reverse=True)
+    for p, patch in enumerate(patches):
+        entry['patches'][p] = [patch[0], apply_reverse_patch(content, patch[1])]
+        content = entry['patches'][p][1]
     entries = [entry]
-    expand(entries)
+    expand(entries)    
     return render_template("page.html", entries=entries, places=hash_to_name)
 
 @app.route("/update", methods=['POST']) 

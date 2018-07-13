@@ -18,6 +18,7 @@
                     <a href="data/images/{{ entry.folder }}/{{ entry._id }}.png" target="_new"><img src="data/images/{{ entry.folder }}/{{ entry._id }}.png" /></a>
                 {% endif %}
                 <textarea class="entry_content" id="content_{{ entry._id }}" onChange="updateEntry('{{ entry._id }}');" onKeyDown="$('#metadata_{{ entry._id }}').addClass('editing');" {% if entry.content == "" %}style="height: 10px;"{% endif %}>{{ entry.content }}</textarea>
+                <div id="versions_{{ entry._id }}">{% for version in entry.patches %}<hr />{{ version[0] }}<br /><br /><textarea class="entry_content" readonly="true" resize="none">{{ version[1] }}</textarea>{% endfor %}</div>
             </div>
         {% endfor %}
             <div id="more"></div>
