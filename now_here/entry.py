@@ -57,7 +57,7 @@ def create_or_update(data):
             return False, e
 
     else:
-        update = {'$set': {'tags': tags, 'content': content}}
+        update = {'$set': {'t': t, 'tags': tags, 'content': content}}
         original_content = db.entries.find_one({'_id': ObjectId(entry_id)})['content']
         if content != original_content:
             t = get_t()
@@ -78,7 +78,7 @@ def expand(entries):
             entry['date'] = get_datestring(entry['t'])
             if 'patches' in entry:
                 for patch in entry['patches']:
-                    patch[0] = str(get_datestring(patch[0]))#.split(" ")[0]
+                    patch[0] = str(get_datestring(patch[0])).split(" ")[0]
             if 'location' in entry and entry['location'] is not None:    
                 place = hash_to_name[entry['location'][0:4]] if entry['location'][0:4] in hash_to_name else entry['location']
                 lonlat = geohash.decode(entry['location'])
