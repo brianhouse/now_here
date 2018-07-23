@@ -5,11 +5,7 @@ images
 
 brew install uwsgi
 brew install mongodb
-pip3 install flask
-pip3 install uwsgi
-pip3 install pymongo
-pip3 install diff-match-patch
-
+python3 ./setup.py --requires  
 
 ### porting notes
 - python3

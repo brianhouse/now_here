@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-import os, datetime, yaml, json, math
+import os, datetime, yaml, json, math, io
 from flask import Flask, render_template, request
 from mongo import db, ObjectId, DESCENDING
+from PIL import Image
 app = Flask(__name__)
 from util import *
 
@@ -61,14 +62,12 @@ def main():
 
     # full response
     if page == 0:
-        app.logger.debug("full page")        
 
         # create tag cloud
         cloud = []
         for entry in entries:            
             cloud.extend(entry['tags'])
         cloud = dict((s, cloud.count(s)) for s in set(cloud))    
-        print(cloud)
         if len(cloud):                            
             max_count = max(cloud.values())
             for tag, count in cloud.items():
@@ -82,7 +81,6 @@ def main():
 
     # partial response
     else:
-        app.logger.debug("partial")
         return render_template("content.html", entries=unpack(entries))
 
 
@@ -119,7 +117,10 @@ def update():
         if location is None or not len(location.strip()):
             location = default_name
         location = name_to_hash[location] if location in name_to_hash else location
-        image = data['image'] if 'image' in data else None
+        if 'image' in data:
+            image = Image.open(io.StringIO(data['image']))
+        else:
+            image = None
         has_image = int(image is not None)
         t = parse_datestring(data['date'])
     except Exception as e:
@@ -153,6 +154,10 @@ def update():
         except Exception as e:
             app.logger.error(e)
             return "Insert failed", 400
+        if image:
+            image_path = os.path.join(os.path.dirname(__file__), "data/images/%s" % str(entry_id)[-1], "%s.png" % entry_id)
+            app.logger.debug("image_path: %s" % image_path)
+            image.save(image_path)
 
     # update
     else:
@@ -194,7 +199,7 @@ def unpack(entries):
                 entry['location'] = {'geohash': entry['location'], 'lonlat': lonlat, 'place': place}
             entry['tags'] = ' '.join(entry['tags'])        
             entry['content'] = entry['content'].replace('=\r\n', '').replace('=20=', '').replace('=20', '')
-            # entry.folder = str(entry.id)[-1]
+            entry['folder'] = str(entry['_id'])[-1]
         except Exception as e:
             app.logger.error(e)
             app.logger.debug(entry)

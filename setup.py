@@ -15,6 +15,7 @@ setup(
         "flask",
         "uwsgi",
         "pymongo",
-        "diff-match-patch"
+        "diff-match-patch",
+        "PIL"
     ],
 )
