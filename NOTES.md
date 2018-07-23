@@ -1,5 +1,4 @@
 ### todo
-pagination -- that actually does have to be a partial
 tag cloud
 consolidate code
 
@@ -27,15 +26,13 @@ pip3 install diff-match-patch
 Applescript is slow as shit
 2739 / 1.5s
 ~30 minutes to run once
-
+  
 
 //
 
 wow, fuck. there are multiple tables in there. did everything get migrated at some point? and was it successful?
 
-I already dont like how complicated it is to have nginx + uwsgi + flask, but ok.
-
-so you test locally, same as tornado, only difference is you launch a different daemon to keep it up
+I already dont like how complicated it is to have nginx + uwsgi + flask, but ok. only difference is you launch a different daemon to keep it up rather than the app itself which is for development
 
 
 ///
@@ -54,7 +51,3 @@ brew services restart mongodb
 
 var tags = $('#search').attr('placeholder', 'tags..');
 onFocus="$('#search').val('');
-
-https://gist.github.com/cpatrick/5719077
-search_this_string = "stuff"
-print collection.find({"$text": {"$search": search_this_string}}).count()

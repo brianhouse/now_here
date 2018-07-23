@@ -3,7 +3,7 @@
 from util import config
 from pymongo import MongoClient, ASCENDING, DESCENDING
 from bson.objectid import ObjectId
-from util.config import config
+from util import config
 
 mongo = config['mongo']
 client = MongoClient(mongo['host'], mongo['port'])

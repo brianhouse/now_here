@@ -11,75 +11,84 @@
 
         var places = {{ places | safe }};
         var page = 0;
-        var search_term = null;
+        var searchTerm = null;
 
-        function updateEntry (entry_id) {
-            console.log("updateEntry [" + entry_id + "]")
-            var content = $('#content_' + entry_id).val();
-            var tags = $('#tags_' + entry_id).val();
+        var updateEntry = function(entryID) {
+            console.log("updateEntry [" + entryID + "]")
+            var content = $('#content_' + entryID).val();
+            var tags = $('#tags_' + entryID).val();
             if (!content.length || !tags.length) {
                 return;
             }
             $.ajax({
                 type: 'POST',
                 url: '/update',                
-                data: { entry_id: entry_id,
-                        location: $('#location_' + entry_id).val(), 
-                        tags: fix_tags(tags), 
-                        date: $('#date_' + entry_id).val(),
+                data: { entryID: entryID,
+                        location: $('#location_' + entryID).val(), 
+                        tags: fixTags(tags), 
+                        date: $('#date_' + entryID).val(),
                         content: content
                         },
-                success: function (data) {                
-                    if (entry_id == "new") {
-                        search($('#tags_' + entry_id).val());
+                success: function(data) {                
+                    if (entryID == "new") {
+                        search($('#tags_' + entryID).val());
                     } else {
                         window.location.reload();
                     }
                 },
-                error: function (data) {
+                error: function(data) {
                     alert(data.responseText);
                 }
             });
         }
 
-        function deleteEntry (entry_id) {
+        var deleteEntry = function(entryID) {
             console.log("deleteEntry")
             if (confirm("Really delete?")) {
                 $.ajax({
                     type: 'POST',
                     url: '/delete', 
-                    data: { entry_id: entry_id },
-                    success: function (data) {        
+                    data: { entryID: entryID },
+                    success: function(data) {        
                         window.location.reload();
                     },
-                    error: function (data) {
+                    error: function(data) {
                         alert(data.responseText);
                     }
                 });
             }
         }
 
-        function search (search_term, page=0) {
-            // how to separate fulltext from tags?
-            // split on " and every second term is fulltext
-            var tokens = search_term.split('"');
-            var tags = tokens.filter(function(element, index, array) {
-                return (index % 2 === 0);
-            });
-            tags = fix_tags(tags);            
-            var full_text = tokens.filter(function(element, index, array) {
-                return (index % 2 === 1);
-            });
-            if (full_text.length) {
-                full_text = '"' + full_text[0] + '"';
-                if (tags.length > 0) full_text = ',' + full_text;
+        var search = function(searchTerm, page=0) {
+            // fulltext: split on " and every second term is fulltext
+            if (searchTerm == null) {
+                tags = "";
+                fullText = "";
             } else {
-                full_text = "";
-            }            
-            window.location = "/?q=" + tags + full_text + "&page=" + page;
+                var tokens = searchTerm.split('"');
+                var tags = tokens.filter(function(element, index, array) {
+                    return (index % 2 === 0);
+                });
+                tags = fixTags(tags);            
+                var fullText = tokens.filter(function(element, index, array) {
+                    return (index % 2 === 1);
+                });
+                if (fullText.length) {
+                    fullText = '"' + fullText[0] + '"';
+                    if (tags.length > 0) fullText = ',' + fullText;
+                } else {
+                    fullText = "";
+                }     
+            }
+            var location = "/?q=" + tags + fullText + "&p=" + page;
+            if (page == 0) {
+                window.location = location;
+            } else {
+                return location;
+            }
         }
 
-        function fix_tags (tags) {
+        var fixTags = function(tags) {
             tags = "" + tags;
             tags = tags.replace(/,/g, ' ').replace(/[,\/#!?@+|[\]><$%\^&\*;:{}=\`~()']/g,"").replace(/\./g, '_').replace(/ /g, ',').toLowerCase();
             tags = tags.split(',');
@@ -92,9 +101,9 @@
 
         $(document).ready(function() {           
             $('.entry_content').autogrow();
-            function GetLocation(location) {
-                var lon = location.coords.longitude;
-                var lat = location.coords.latitude;
+            var getGeo = function(geo) {
+                var lon = geo.coords.longitude;
+                var lat = geo.coords.latitude;
                 var geohash = encodeGeoHash(lat, lon);                        
                 $('#location_new').val(geohash);
                 var place = places[geohash.substr(0, 4)];
@@ -102,24 +111,21 @@
                 p = "<a target='_new' href='http://maps.google.com/?q=" + lat + "," + lon + "'>" + place + "</a>";
                 $('#display_location_new').html(p);
             }                
-            navigator.geolocation.getCurrentPosition(GetLocation);                    
+            navigator.geolocation.getCurrentPosition(getGeo);                    
         });        
 
-        $(window).scroll(function(){
+        $(window).scroll(function() {
             if ($(window).scrollTop() == $(document).height() - $(window).height()) {                
                 page += 1;
                 $.ajax({
                     type: 'GET',
-                    url: 'index.py',                
-                    data: { q: search_term,
-                            page: page
-                            },
-                    success: function (data) {
-                        $("#more").replaceWith(data)                        
+                    url: search(searchTerm, page),
+                    success: function(partial) {
+                        $("#more").replaceWith(partial)                        
                         $('.entry_content').autogrow();
                     },
-                    error: function (data) {
-                        // alert(data.responseText);
+                    error: function(data) {
+                        alert(data.responseText);
                     }
                 });                             
             }
@@ -133,6 +139,13 @@
         <div id="searchbar">
             <a href="/">NEW</a> - <a href="/?q">RECENT</a> - SEARCH: <input id="search" type="text" onChange="search($('#search').val());" value="{% if search_string != None %}{{ search_string }}{% endif %}" />
         </div>
+        {% if cloud %}
+        <div id="tagcloud">
+            {% for tag in cloud %}
+                <a href="javascript:search('{{ tag[0] }}');" class="tag_{{ tag[1] }}">{{ tag[0] }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}        
         <div id="content">
         {% include "content.html" %}
         </div>

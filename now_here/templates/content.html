@@ -1,10 +1,6 @@
 {% block content %}
-        {% if cloud %}
-            <div id="tagcloud">
-                {% for tag in cloud %}
-                    <a href="javascript:search('{{ tag[0] }}');" class="tag_{{ tag[1] }}">{{ tag[0] }}</a>
-                {% endfor %}
-            </div>
+        {% if entries | length == 0 %}
+            -----x
         {% endif %}
         {% for entry in entries %}
             <div id="entry_{{ entry._id }}" class="entry">
