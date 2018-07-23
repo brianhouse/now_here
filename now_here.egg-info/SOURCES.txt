@@ -1,0 +1,13 @@
+LICENSE.txt
+README.md
+launch.sh
+nginx.conf.smp
+setup.py
+now_here/__main__.py
+now_here/mongo.py
+now_here/util.py
+now_here.egg-info/PKG-INFO
+now_here.egg-info/SOURCES.txt
+now_here.egg-info/dependency_links.txt
+now_here.egg-info/requires.txt
+now_here.egg-info/top_level.txt

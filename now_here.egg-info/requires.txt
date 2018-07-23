@@ -1,0 +1,4 @@
+flask
+uwsgi
+pymongo
+diff-match-patch
