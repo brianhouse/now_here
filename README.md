@@ -1,6 +1,6 @@
 # Now/Here  
 
-Simple journaling platform  
+Simple notes/journaling platform with tagging and full-text search. Uses mongo.
 
 Test/develop with `python3 now_here`  
 

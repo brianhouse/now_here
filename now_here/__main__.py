@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, datetime, yaml, json
+import os, datetime, yaml, json, math
 from flask import Flask, render_template, request
 from mongo import db, ObjectId, DESCENDING
 app = Flask(__name__)
@@ -57,11 +57,30 @@ def main():
         entries = list(db.entries.find(query, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).skip(page * 100).limit(100))
         search_string = " ".join(tags) + (" -" + " -".join(anti_tags) if len(anti_tags) else "") + (' "' + full_text + '"' if full_text else "")
 
-    # full or partial response
     app.logger.debug("Found %d results" % len(entries))    
+
+    # full response
     if page == 0:
-        app.logger.debug("full page")
-        return render_template("page.html", entries=unpack(entries), places=hash_to_name, search_string=search_string.strip())
+        app.logger.debug("full page")        
+
+        # create tag cloud
+        cloud = []
+        for entry in entries:            
+            cloud.extend(entry['tags'])
+        cloud = dict((s, cloud.count(s)) for s in set(cloud))    
+        print(cloud)
+        if len(cloud):                            
+            max_count = max(cloud.values())
+            for tag, count in cloud.items():
+                cloud[tag] = int(math.ceil((count / max_count) * 5))
+            cloud = list(cloud.items())
+            cloud.sort(key=lambda c: c[0])
+        else:
+            cloud = None
+
+        return render_template("page.html", entries=unpack(entries), places=hash_to_name, search_string=search_string.strip(), cloud=cloud)
+
+    # partial response
     else:
         app.logger.debug("partial")
         return render_template("content.html", entries=unpack(entries))
@@ -105,7 +124,7 @@ def update():
         t = parse_datestring(data['date'])
     except Exception as e:
         app.logger.error(e)
-        return e, 400
+        return "Parsing failed", 400
 
     # unpack facet tags
     for i, tag in enumerate(tags):
@@ -129,10 +148,11 @@ def update():
     if entry_id == "new":
         try:
             entry_id = db.entries.insert({'t': t, 'location': location, 'tags': tags, 'content': content, 'has_image': has_image, 'patches': []})            
-            app.logger.debug(entry_id)
+            entry_id = str(entry_id)
+            app.logger.debug("New entry: %s" % entry_id)
         except Exception as e:
             app.logger.error(e)
-            return e, 400
+            return "Insert failed", 400
 
     # update
     else:
@@ -146,7 +166,7 @@ def update():
             db.entries.update_one({'_id': ObjectId(entry_id)}, update)
         except Exception as e:
             app.logger.error(e)
-            return e, 400
+            return "Update failed", 400
 
     return entry_id
 
@@ -157,7 +177,7 @@ def delete():
         db.entries.delete_one({'_id': ObjectId(request.form['entry_id'])})
     except Exception as e:
         app.logger.error(e)
-        return e, 400
+        return "Delete failed", 400
     return "Success"
     
 

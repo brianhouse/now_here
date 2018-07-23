@@ -23,7 +23,7 @@
             $.ajax({
                 type: 'POST',
                 url: '/update',                
-                data: { entryID: entryID,
+                data: { entry_id: entryID,
                         location: $('#location_' + entryID).val(), 
                         tags: fixTags(tags), 
                         date: $('#date_' + entryID).val(),
@@ -48,7 +48,7 @@
                 $.ajax({
                     type: 'POST',
                     url: '/delete', 
-                    data: { entryID: entryID },
+                    data: { entry_id: entryID },
                     success: function(data) {        
                         window.location.reload();
                     },

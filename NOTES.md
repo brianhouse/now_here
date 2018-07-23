@@ -1,8 +1,5 @@
 ### todo
-tag cloud
-consolidate code
-
-
+images
 
 ### install
 
