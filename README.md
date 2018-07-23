@@ -5,7 +5,7 @@ Simple browser-based note-taking.
 - full-text search
 - location aware
 - stores diffs
-- uses Mongo
+- uses Flask / Mongo / nginx
 
 Test/develop with `python3 now_here`  
 
