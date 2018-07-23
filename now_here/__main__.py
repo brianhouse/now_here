@@ -32,9 +32,8 @@ def main():
     # recent entries
     if not len(q):  
         app.logger.debug("RECENT page=%s" % (page,))
-        entries = list(db.entries.find(None, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).limit(100))
+        entries = list(db.entries.find(None, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).skip(page * 100).limit(100))
         search_string = ""
-        # return render_template("page.html", entries=unpack(entries), places=hash_to_name)
 
     # search
     else:
@@ -55,7 +54,7 @@ def main():
             pass
         query = {'$and': match}
         app.logger.debug(query)
-        entries = list(db.entries.find(query, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).limit(100))
+        entries = list(db.entries.find(query, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).skip(page * 100).limit(100))
         search_string = " ".join(tags) + (" -" + " -".join(anti_tags) if len(anti_tags) else "") + (' "' + full_text + '"' if full_text else "")
 
     # full or partial response
