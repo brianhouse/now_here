@@ -1,6 +1,11 @@
 # Now/Here  
 
-Simple notes/journaling platform with tagging and full-text search. Uses mongo.
+Simple browser-based note-taking.
+- tagging
+- full-text search
+- location aware
+- stores diffs
+- uses Mongo
 
 Test/develop with `python3 now_here`  
 
