@@ -3,56 +3,59 @@
 import os, datetime, yaml, json
 from flask import Flask, render_template, request
 from mongo import db, ObjectId, DESCENDING
-
 app = Flask(__name__)
-with open(os.path.join(os.path.dirname(__file__), "places.yaml")) as f:
-    y = yaml.load(f)
-    hash_to_name = y['hash_to_name']
-    name_to_hash = y['name_to_hash']
-    default_name = y['default_name']
-from entry import create_or_update, expand, apply_reverse_patch, get_datestring
+from entry import *
+
 
 @app.route("/")
 def main():
-    entry = {   '_id': "new",
-                'tags': "",
-                'content': "",
-                'location': None, 
-                'date': get_datestring().split('.')[0]
-                }
-    entries = [entry]    
-    return render_template("page.html", entries=[entry], places=hash_to_name)
+    if not 'q' in request.args:
+        app.logger.debug("NEW")
+        entry = {   '_id': "new",
+                    'tags': "",
+                    'content': "",
+                    'location': None, 
+                    'date': get_datestring().split('.')[0]
+                    }
+        entries = [entry]    
+        return render_template("page.html", entries=[entry], places=hash_to_name)
+    q = request.args['q']
+    app.logger.debug("q=[%s]" % q)
+    if not len(q):  
+        app.logger.debug("RECENT")
+        entries = list(db.entries.find(None, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).limit(100))
+        expand(entries)
+        return render_template("page.html", entries=entries, places=hash_to_name)
+    else:
+        app.logger.debug("SEARCH")
+        tokens = q.split(',')
+        tags = [tag for tag in tokens if len(tag) and tag[0] not in '-"' and len(tag)]
+        anti_tags = [tag[1:] for tag in tokens if len(tag) and tag[0] == '-' and len(tag)]
+        full_text = [tag.strip('"') for tag in tokens if len(tag) and tag[0] == '"' and len(tag) > 2]
+        full_text = full_text[0] if len(full_text) else None
+        match = []
+        if len(tags):
+            match.append({'tags': {'$all': tags}})
+        if len(anti_tags):
+            match.append({'tags': {'$nin': anti_tags}})
+        if full_text:
+            match.append({"$text": {"$search": full_text}})     
+        if not len(match):
+            pass
+        query = {'$and': match}
+        app.logger.debug(query)
+        entries = list(db.entries.find(query, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).limit(100))
+        expand(entries)    
+        search_string = " ".join(tags) + (" -" + " -".join(anti_tags) if len(anti_tags) else "") + (' "' + full_text + '"' if full_text else "")
+        return render_template("page.html", entries=entries, places=hash_to_name, search_string=search_string.strip())
 
-@app.route("/recent") 
-def recent():
-    entries = list(db.entries.find(None, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).limit(100))
-    expand(entries)
-    return render_template("page.html", entries=entries, places=hash_to_name)
-
-@app.route("/search/<int:page>") 
-def search(page):
-    q = request.args['q'] if 'q' in request.args else ''
-    tokens = q.split(',') if len(q) else []
-    tags = [tag for tag in tokens if len(tag) and tag[0] not in '-"' and len(tag)]
-    anti_tags = [tag[1:] for tag in tokens if len(tag) and tag[0] == '-' and len(tag)]
-    full_text = [tag.strip('"') for tag in tokens if len(tag) and tag[0] == '"' and len(tag) > 2]
-    full_text = full_text[0] if len(full_text) else None
-    match = {'$and': []}
-    if len(tags):
-        match['$and'].append({'tags': {'$all': tags}})
-    if len(anti_tags):
-        match['$and'].append({'tags': {'$nin': anti_tags}})
-    if full_text:
-        match['$and'].append({"$text": {"$search": full_text}})        
-    app.logger.debug(match)
-    entries = list(db.entries.find(match, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).limit(100))
-    expand(entries)    
-    search_string = " ".join(tags) + (" -" + " -".join(anti_tags) if len(anti_tags) else "") + (' "' + full_text + '"' if full_text else "")
-    return render_template("page.html", entries=entries, places=hash_to_name, search_string=search_string.strip())
-
-@app.route("/entries/<string:entry_id>") 
+@app.route("/<string:entry_id>") 
 def entries(entry_id):
-    entry = db.entries.find_one({'_id': ObjectId(entry_id)})
+    entry = None
+    try:
+        entry = db.entries.find_one({'_id': ObjectId(entry_id)})
+    except Exception as e:
+        app.logger.warning(e)
     if entry is None:
         return "404 NOT FOUND", 404
     content = entry['content']
@@ -82,6 +85,7 @@ def delete():
         app.logger.error(e)
         return e, 400
     return "Success"
+    
 
 application = app
 if __name__ == "__main__":

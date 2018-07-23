@@ -10,7 +10,7 @@
             <div id="entry_{{ entry._id }}" class="entry">
                 <div id="metadata_{{ entry._id }}" class="metadata">
                     <input class="date" id="date_{{ entry._id }}" type="text" value="{{ entry.date }}" onKeyDown="$('#metadata_{{ entry._id }}').addClass('editing');" onChange="updateEntry('{{ entry._id }}');" />
-                    <div class="display_location" id="display_location_{{ entry._id }}" >{% if entry.location and entry.location.lonlat %}<a target="_new" href="http://maps.google.com/?q={{ entry.location.lonlat }}">{{ entry.location.place }}</a>{% endif %}{% if entry.content | length or entry.tags | length %} <a class="delete" href="/entries/{{ entry._id }}">#</a> <a class="delete" href="javascript:deleteEntry('{{ entry._id }}');">X</a>{% endif %}</div> 
+                    <div class="display_location" id="display_location_{{ entry._id }}" >{% if entry.location and entry.location.lonlat %}<a target="_new" href="http://maps.google.com/?q={{ entry.location.lonlat }}">{{ entry.location.place }}</a>{% endif %}{% if entry.content | length or entry.tags | length %} <a class="delete" href="/{{ entry._id }}">#</a> <a class="delete" href="javascript:deleteEntry('{{ entry._id }}');">X</a>{% endif %}</div> 
                     <input class="location" id="location_{{ entry._id }}" type="hidden" value="{{ entry.location.geohash }}" readonly="readonly" />
                     <input class="tags" id="tags_{{ entry._id }}" type="text" value="{{ entry.tags }}" placeholder="tags" onChange="updateEntry('{{ entry._id }}');" onKeyDown="$('#metadata_{{ entry._id }}').addClass('editing');" />
                 </div>    

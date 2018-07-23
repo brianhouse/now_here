@@ -1,9 +1,7 @@
-import calendar, string, re, geohash, datetime
-import diff_match_patch
+import os, calendar, string, re, geohash, datetime, diff_match_patch, yaml
 from dateutil import parser
-from pymongo import MongoClient
-from __main__ import app, hash_to_name, name_to_hash, default_name
 from mongo import db, ObjectId
+from __main__ import app
 
 def create_or_update(data):
     app.logger.debug("entry.create_or_update")
@@ -90,8 +88,6 @@ def expand(entries):
             app.logger.error(e)
             app.logger.debug(entry)
 
-##            
-
 def depunctuate(s, exclude=None, replacement=''):
     p = string.punctuation
     if exclude:
@@ -99,8 +95,6 @@ def depunctuate(s, exclude=None, replacement=''):
             p = p.replace(c, '')    
     regex = re.compile('[%s]' % re.escape(p))
     return regex.sub(replacement, s) 
-
-##
 
 def parse_datestring(string):
     """We are purposefully ignoring timezone and storing as if everything was UTC"""
@@ -122,8 +116,6 @@ def get_datestring(t=None):
         t = get_t()
     return str(datetime.datetime.utcfromtimestamp(t))
 
-##    
-
 dmp = diff_match_patch.diff_match_patch()
 
 def get_reverse_patch(original, new):
@@ -133,3 +125,9 @@ def get_reverse_patch(original, new):
 def apply_reverse_patch(new, patch):
     patches = dmp.patch_fromText(patch)
     return dmp.patch_apply(patches, new)[0]
+
+with open(os.path.join(os.path.dirname(__file__), "places.yaml")) as f:
+    y = yaml.load(f)
+    hash_to_name = y['hash_to_name']
+    name_to_hash = y['name_to_hash']
+    default_name = y['default_name']    

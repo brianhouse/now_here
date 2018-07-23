@@ -1,18 +1,8 @@
 ### todo
-fix route
 pagination -- that actually does have to be a partial
 tag cloud
 consolidate code
 
-
-routes:
-/   recent
-/id entry
-/?q= recent
-/?q=search search
-
-get rid of 'recent' 'entries' and 'search'
-but how does that work with flask?
 
 
 ### install
