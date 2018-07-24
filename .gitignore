@@ -3,3 +3,4 @@ __pycache__
 nginx_openpaths.conf.smp
 logs
 config.yaml
+migration

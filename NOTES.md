@@ -13,7 +13,11 @@ Applescript is slow as shit
 
 brew install uwsgi
 brew install mongodb
-python3 ./setup.py --requires  
+sudo pip3 install flask
+sudo pip3 install uwsgi
+sudo pip3 install pymongo
+sudo pip3 install diff-match-patch
+sudo pip3 install PIL
 
 ### porting notes
 wow, fuck. there are multiple tables in there. did everything get migrated at some point? and was it successful?
