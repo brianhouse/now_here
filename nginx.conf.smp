@@ -19,8 +19,8 @@ http {
         listen       8080;
         server_name  localhost;
 
-        access_log  /Users/house/Desktop/nowhere2/logs/access.log;
-        error_log  /Users/house/Desktop/nowhere2/logs/error.log;
+        access_log  /Users/house/Projects/now_here/logs/access.log;
+        error_log  /Users/house/Projects/now_here/logs/error.log;
 
         location / { 
             try_files $uri @nowhere;

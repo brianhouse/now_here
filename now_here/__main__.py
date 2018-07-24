@@ -33,7 +33,7 @@ def main():
     # recent entries
     if not len(q):  
         app.logger.debug("RECENT page=%s" % (page,))
-        entries = list(db.entries.find(None, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).skip(page * 100).limit(100))
+        entries = list(db.entries.find(None, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
         search_string = ""
 
     # search
@@ -55,7 +55,7 @@ def main():
             pass
         query = {'$and': match}
         app.logger.debug(query)
-        entries = list(db.entries.find(query, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).skip(page * 100).limit(100))
+        entries = list(db.entries.find(query, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
         search_string = " ".join(tags) + (" -" + " -".join(anti_tags) if len(anti_tags) else "") + (' "' + full_text + '"' if full_text else "")
 
     app.logger.debug("Found %d results" % len(entries))    
@@ -69,23 +69,26 @@ def main():
             cloud.extend(entry['tags'])
         cloud = dict((s, cloud.count(s)) for s in set(cloud))    
         if len(cloud):                            
-            max_count = max(cloud.values())
+            min_count = min(cloud.values())
+            max_count = max(max(cloud.values()), min_count + 1)
             for tag, count in cloud.items():
-                cloud[tag] = int(math.ceil((count / max_count) * 5))
+                cloud[tag] = int(math.ceil(((count - min_count) / (max_count - min_count)) * 5))
             cloud = list(cloud.items())
             cloud.sort(key=lambda c: c[0])
         else:
             cloud = None
 
-        return render_template("page.html", entries=unpack(entries), places=hash_to_name, search_string=search_string.strip(), cloud=cloud)
+        return render_template("page.html", entries=unpack(entries[:10]), places=hash_to_name, search_string=search_string.strip(), cloud=cloud)
 
     # partial response
     else:
-        return render_template("content.html", entries=unpack(entries))
+        return render_template("content.html", entries=unpack(entries[:10]))
 
 
 @app.route("/<string:entry_id>") 
 def entry(entry_id):
+    if 'q' in request.args or 'p' in request.args:
+        return ""
     entry = None
     try:
         entry = db.entries.find_one({'_id': ObjectId(entry_id)})
@@ -161,10 +164,11 @@ def update():
 
     # update
     else:
-        update = {'$set': {'t': t, 'tags': tags, 'content': content}}
+        # update = {'$set': {'t': t, 'tags': tags, 'content': content}}     # if migrating, dont add t (and dont replace it below)
+        update = {'$set': {'tags': tags, 'content': content}}        
         original_content = db.entries.find_one({'_id': ObjectId(entry_id)})['content']
         if content != original_content:
-            t = get_t()
+            # t = get_t()
             patch = (t, get_reverse_patch(original_content, content))
             update['$push'] = {'patches': patch}
         try:
@@ -198,7 +202,6 @@ def unpack(entries):
                 lonlat = geohash.decode(entry['location'])
                 entry['location'] = {'geohash': entry['location'], 'lonlat': lonlat, 'place': place}
             entry['tags'] = ' '.join(entry['tags'])        
-            entry['content'] = entry['content'].replace('=\r\n', '').replace('=20=', '').replace('=20', '')
             entry['folder'] = str(entry['_id'])[-1]
         except Exception as e:
             app.logger.error(e)

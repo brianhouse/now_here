@@ -1,5 +1,13 @@
 ### todo
-images
+migration: re-migrate with images?
+auto-backup
+Notes.app pull (when note is older than a week)
+tool to normalize tags (what, is it 2004?)
+
+Applescript is slow as shit
+2739 / 1.5s
+~30 minutes to run once
+
 
 ### install
 
@@ -8,28 +16,7 @@ brew install mongodb
 python3 ./setup.py --requires  
 
 ### porting notes
-- python3
-- run via flash + nginx
-- mongo
-- if term is in quotes, it does full text search, otherwise tag search only (if no tags found, cascade to full text)
-- get rid of ajax style loading, have a path scheme
-- make a cron that auto backsup
-- make a cron that auto pulls from Notes and puts into nowhere when Note is older than a week
-
-Applescript is slow as shit
-2739 / 1.5s
-~30 minutes to run once
-  
-
-//
-
 wow, fuck. there are multiple tables in there. did everything get migrated at some point? and was it successful?
-
-I already dont like how complicated it is to have nginx + uwsgi + flask, but ok. only difference is you launch a different daemon to keep it up rather than the app itself which is for development
-
-
-///
-
 
 ### server
 
