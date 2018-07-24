@@ -22,13 +22,13 @@ http {
         access_log  /Users/house/Projects/now_here/logs/access.log;
         error_log  /Users/house/Projects/now_here/logs/error.log;
 
-        location / { 
-            try_files $uri @nowhere;
-        }
-        location @nowhere {
+        location /static {
+            autoindex on;
+            alias /Users/house/Projects/now_here/static;
+        }        
+        location / {
             uwsgi_pass 127.0.0.1:4242;
             include uwsgi_params;        
         }
     }
-
 }
