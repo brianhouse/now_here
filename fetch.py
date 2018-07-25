@@ -72,7 +72,7 @@ def main():
         except Exception as e:
             log.error(log.exc(e))
         try:
-            r = requests.post("http://localhost:5000/update", data=entry, files=files)
+            r = requests.post("http://localhost:%s/update" % config['port'], data=entry, files=files)
         except Exception as e:
             success = False
             log.error(log.exc(e))
