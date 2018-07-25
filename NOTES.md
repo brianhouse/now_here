@@ -1,4 +1,6 @@
 ### todo
+check backups are being created and email is being fetched
+
 Notes.app pull (when note is older than a week)
 tool to normalize tags (what, is it 2004?)
 

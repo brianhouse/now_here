@@ -1,2 +1,3 @@
 @reboot /Users/house/Projects/now_here/launch.sh
 @reboot,@daily /Users/house/Projects/now_here/backup.sh
+18 */4 * * * /Users/house/Projects/now_here/fetch.py

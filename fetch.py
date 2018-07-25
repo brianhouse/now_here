@@ -46,7 +46,9 @@ def fetch_email(delete=False):
     return messages        
   
 def main():
-    for message in fetch_email():
+    messages = fetch_email()
+    log.info("Found %d messages" % len(messages))
+    for message in messages:
         safe = False
         for address in config['addresses']:        
             if address in message['from']:
