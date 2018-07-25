@@ -11,7 +11,6 @@
 
         var places = {{ places | safe }};
         var page = 0;
-        var searchTerm = null;
 
         var updateEntry = function(entryID) {
             console.log("updateEntry [" + entryID + "]")
@@ -119,7 +118,7 @@
                 page += 1;
                 $.ajax({
                     type: 'GET',
-                    url: search(searchTerm, page),
+                    url: search($('#search').val(), page),
                     success: function(partial) {
                         $("#more").replaceWith(partial)                        
                         $('.entry_content').autogrow();

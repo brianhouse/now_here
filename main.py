@@ -33,7 +33,7 @@ def main():
     # recent entries
     if not len(q):  
         app.logger.debug("RECENT page=%s" % (page,))
-        entries = list(db.entries.find(None, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
+        entries = list(db.entries.find(None, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True, 'image': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
         search_string = ""
 
     # search
@@ -55,7 +55,7 @@ def main():
             pass
         query = {'$and': match}
         app.logger.debug(query)
-        entries = list(db.entries.find(query, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
+        entries = list(db.entries.find(query, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True, 'image': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
         search_string = " ".join(tags) + (" -" + " -".join(anti_tags) if len(anti_tags) else "") + (' "' + full_text + '"' if full_text else "")
 
     app.logger.debug("Found %d results" % len(entries))    
@@ -120,11 +120,12 @@ def update():
         if location is None or not len(location.strip()):
             location = default_name
         location = name_to_hash[location] if location in name_to_hash else location
-        if 'image' in data:
-            image = Image.open(io.StringIO(data['image']))
-        else:
-            image = None
-        has_image = int(image is not None)
+        image = data['image']
+        image_data = None
+        if 'image_data' in data:
+            image_data = Image.open(io.StringIO(data['image_data']))
+            if not image:
+                image = entry_id
         t = parse_datestring(data['date'])
     except Exception as e:
         app.logger.error(e)
@@ -151,16 +152,16 @@ def update():
     # create new
     if entry_id == "new":
         try:
-            entry_id = db.entries.insert({'t': t, 'location': location, 'tags': tags, 'content': content, 'has_image': has_image, 'patches': []})            
+            entry_id = db.entries.insert({'t': t, 'location': location, 'tags': tags, 'content': content, 'image': image, 'patches': []})            
             entry_id = str(entry_id)
             app.logger.debug("New entry: %s" % entry_id)
         except Exception as e:
             app.logger.error(e)
             return "Insert failed", 400
-        if image:
-            image_path = os.path.join(os.path.dirname(__file__), "data/images/%s" % str(entry_id)[-1], "%s.png" % entry_id)
+        if image_data:
+            image_path = os.path.join(os.path.dirname(__file__), "static", "data", "images", str(image)[-1], "%s.png" % str(image))
             app.logger.debug("image_path: %s" % image_path)
-            image.save(image_path)
+            image_data.save(image_path)
 
     # update
     else:
@@ -202,7 +203,7 @@ def unpack(entries):
                 lonlat = geohash.decode(entry['location'])
                 entry['location'] = {'geohash': entry['location'], 'lonlat': lonlat, 'place': place}
             entry['tags'] = ' '.join(entry['tags'])        
-            entry['folder'] = str(entry['_id'])[-1]
+            entry['folder'] = str(entry['image'])[-1]
         except Exception as e:
             app.logger.error(e)
             app.logger.debug(entry)

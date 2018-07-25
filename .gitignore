@@ -4,3 +4,4 @@ nginx_openpaths.conf.smp
 logs
 config.yaml
 migration
+static/data
