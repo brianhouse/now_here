@@ -1,0 +1,11 @@
+mongo:
+    host: 
+    port: 
+    database: 
+
+imap:
+  host: 
+  username: 
+  password: 
+
+addresses:

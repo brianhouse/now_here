@@ -7,6 +7,6 @@ Simple browser-based note-taking.
 - stores diffs
 - uses Flask / Mongo / nginx
 
-Test/develop with `python3 now_here`  
+Test/develop with `./main.py`  
 
 Deploy behind nginx with `./launch.sh`   

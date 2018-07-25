@@ -7,7 +7,7 @@ with open(os.path.join(os.path.dirname(__file__), "places.yaml")) as f:
     name_to_hash = y['name_to_hash']
     default_name = y['default_name']    
 
-with open(os.path.join(os.path.dirname(__file__), "db.yaml")) as f:
+with open(os.path.join(os.path.dirname(__file__), "config.yaml")) as f:
     config = yaml.load(f)
     
 dmp = diff_match_patch.diff_match_patch()

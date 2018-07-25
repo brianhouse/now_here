@@ -24,6 +24,7 @@ hash_to_name:
     dr5q: NYC
     dr72: NYC
     drmj: Providence
+    drmn: Pawtucket
     6gyf: Sao Paulo
     u6sc: Stockholm
     u6tq: Sweden
@@ -53,5 +54,6 @@ name_to_hash:
     Pasadena: 9q5fqbypq8js
     Maajaam: ud6fs2f5bp8p
     Tallinn: ud9d48fkznwj
+    Pawtucket: drmnphx53qyv
     
 default_name: Providence

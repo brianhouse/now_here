@@ -10,6 +10,7 @@ from util import *
 
 @app.route("/")
 def main():
+    app.logger.debug("/")        
 
     # new entry
     if not 'q' in request.args:
@@ -87,6 +88,7 @@ def main():
 
 @app.route("/<string:entry_id>") 
 def entry(entry_id):
+    app.logger.debug("/(entry)")    
     if 'q' in request.args or 'p' in request.args:
         return ""
     entry = None
@@ -110,10 +112,12 @@ def entry(entry_id):
 def update():
 
     # parse data
+    app.logger.debug("/update")
     data = {key: value[0] for (key, value) in dict(request.form).items()}
     app.logger.debug(data)
     try:
         entry_id = data['entry_id']
+        t = parse_datestring(data['date'])
         tags = list(set(tag.lower().replace('.', '_') for tag in data['tags'].split(',')))
         content = str(data['content']).strip()
         location = data['location']
@@ -122,11 +126,8 @@ def update():
         location = name_to_hash[location] if location in name_to_hash else location
         image = data['image'] if 'image' in data else None
         image_data = None
-        if 'image_data' in data:
-            image_data = Image.open(io.StringIO(data['image_data']))
-            if not image:
-                image = entry_id
-        t = parse_datestring(data['date'])
+        if 'image_data' in request.files:        
+            image_data = Image.open(request.files['image_data'].stream)
     except Exception as e:
         app.logger.error(e)
         return "Parsing failed", 400
@@ -152,24 +153,26 @@ def update():
     # create new
     if entry_id == "new":
         try:
-            entry_id = db.entries.insert({'t': t, 'location': location, 'tags': tags, 'content': content, 'image': image, 'patches': []})            
+            entry_id = db.entries.insert({'t': t, 'location': location, 'tags': tags, 'content': content, 'patches': []})
             entry_id = str(entry_id)
             app.logger.debug("New entry: %s" % entry_id)
         except Exception as e:
             app.logger.error(e)
             return "Insert failed", 400
         if image_data:
+            if not image:
+                image = entry_id
             image_path = os.path.join(os.path.dirname(__file__), "static", "data", "images", str(image)[-1], "%s.png" % str(image))
             app.logger.debug("image_path: %s" % image_path)
             image_data.save(image_path)
+            db.entries.update_one({'_id': ObjectId(entry_id)}, {'$set': {'image': image}})            
 
     # update
     else:
-        # update = {'$set': {'t': t, 'tags': tags, 'content': content}}     # if migrating, dont add t (and dont replace it below)
-        update = {'$set': {'tags': tags, 'content': content}}        
+        update = {'$set': {'t': t, 'tags': tags, 'content': content}}     # if migrating, dont add t (and dont replace it below)
         original_content = db.entries.find_one({'_id': ObjectId(entry_id)})['content']
         if content != original_content:
-            # t = get_t()
+            t = get_t()
             patch = (t, get_reverse_patch(original_content, content))
             update['$push'] = {'patches': patch}
         try:
@@ -183,6 +186,7 @@ def update():
 
 @app.route("/delete", methods=['POST']) 
 def delete():
+    app.logger.debug("/delete")        
     try:
         db.entries.delete_one({'_id': ObjectId(request.form['entry_id'])})
     except Exception as e:
