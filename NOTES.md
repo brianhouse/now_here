@@ -1,6 +1,4 @@
 ### todo
-migration: re-migrate with images?
-auto-backup
 Notes.app pull (when note is older than a week)
 tool to normalize tags (what, is it 2004?)
 
@@ -18,9 +16,6 @@ sudo pip3 install uwsgi
 sudo pip3 install pymongo
 sudo pip3 install diff-match-patch
 sudo pip3 install PIL
-
-### porting notes
-wow, fuck. there are multiple tables in there. did everything get migrated at some point? and was it successful?
 
 ### server
 

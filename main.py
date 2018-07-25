@@ -120,7 +120,7 @@ def update():
         if location is None or not len(location.strip()):
             location = default_name
         location = name_to_hash[location] if location in name_to_hash else location
-        image = data['image']
+        image = data['image'] if 'image' in data else None
         image_data = None
         if 'image_data' in data:
             image_data = Image.open(io.StringIO(data['image_data']))

@@ -1,1 +1,2 @@
 @reboot /Users/house/Projects/now_here/launch.sh
+@reboot,@daily /Users/house/Projects/now_here/backup.sh
