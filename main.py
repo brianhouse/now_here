@@ -51,7 +51,7 @@ def main():
         if len(anti_tags):
             match.append({'tags': {'$nin': anti_tags}})
         if full_text:
-            match.append({"$text": {"$search": full_text}})     
+            match.append({"$text": {"$search": '\"%s\"' % full_text}})     
         if not len(match):
             pass
         query = {'$and': match}
@@ -117,10 +117,10 @@ def update():
     app.logger.debug(data)
     try:
         entry_id = data['entry_id']
-        t = parse_datestring(data['date'])
-        tags = list(set(tag.lower().replace('.', '_') for tag in data['tags'].split(',')))
-        content = str(data['content']).strip()
-        location = data['location']
+        content = str(data['content']).strip()        
+        t = parse_datestring(data['date']) if 'date' in data else get_t()
+        tags = list(set(tag.lower().replace('.', '_') for tag in data['tags'].split(','))) if 'tags' in data else []
+        location = data['location'] if 'location' in data else None
         if location is None or not len(location.strip()):
             location = default_name
         location = name_to_hash[location] if location in name_to_hash else location
