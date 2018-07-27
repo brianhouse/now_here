@@ -1,14 +1,13 @@
 import os, calendar, string, re, geohash, datetime, diff_match_patch, yaml, shutil
 from dateutil import parser
+from .log import log
+from .config import config
 
-with open(os.path.join(os.path.dirname(__file__), "places.yaml")) as f:
+with open(os.path.join(os.path.dirname(__file__), "..", "places.yaml")) as f:
     y = yaml.load(f)
     hash_to_name = y['hash_to_name']
     name_to_hash = y['name_to_hash']
     default_name = y['default_name']    
-
-with open(os.path.join(os.path.dirname(__file__), "config.yaml")) as f:
-    config = yaml.load(f)
     
 dmp = diff_match_patch.diff_match_patch()
 

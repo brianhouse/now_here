@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/local/bin/python3
 
 import io, imaplib, email, mimetypes, requests
-from util import config, default_name
+from util import *
 
 def fetch_email(delete=False):
     server = imaplib.IMAP4_SSL(config['imap']['host'])
@@ -81,26 +81,4 @@ def main():
                     
 
 if __name__ == "__main__":
-
-    import os, logging, sys, logging.handlers
-
-    name = "fetch"
-    log = logging.getLogger(name)
-    log.setLevel(logging.DEBUG)
-    log.propagate = False
-    logdir = os.path.abspath(os.path.join(os.path.dirname(__file__), "logs"))
-    if not os.path.isdir(logdir):
-        os.makedirs(logdir)
-    logfile = os.path.join(logdir, "%s.log" % name)
-    logfile = logging.handlers.TimedRotatingFileHandler(logfile, 'midnight')    
-    logfile.setLevel(logging.DEBUG)
-    log.addHandler(logfile)
-    formatter = logging.Formatter("%(asctime)s |%(levelname)s| %(message)s <%(filename)s:%(lineno)d>")            
-    logfile.setFormatter(formatter)
-
-    def exc(e):
-        return "%s <%s:%s> %s" % (sys.exc_info()[0].__name__, os.path.split(sys.exc_info()[2].tb_frame.f_code.co_filename)[1], sys.exc_info()[2].tb_lineno, e)
-
-    log.exc = exc   
-
     main()

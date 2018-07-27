@@ -6,15 +6,16 @@ from mongo import db, ObjectId, DESCENDING
 from PIL import Image
 app = Flask(__name__)
 from util import *
+app.logger = log
 
 
 @app.route("/")
 def main():
-    app.logger.debug("/")        
+    log.info("/")        
 
     # new entry
     if not 'q' in request.args:
-        app.logger.debug("NEW")
+        log.info("NEW")
         entry = {   '_id': "new",
                     'tags': "",
                     'content': "",
@@ -33,13 +34,13 @@ def main():
 
     # recent entries
     if not len(q):  
-        app.logger.debug("RECENT page=%s" % (page,))
+        log.info("RECENT page=%s" % (page,))
         entries = list(db.entries.find(None, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True, 'image': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
         search_string = ""
 
     # search
     else:
-        app.logger.debug("SEARCH q=[%s] page=%s" % (q, page))
+        log.info("SEARCH q=[%s] page=%s" % (q, page))
         tokens = q.split(',')
         tags = [tag for tag in tokens if len(tag) and tag[0] not in '-"' and len(tag)]
         anti_tags = [tag[1:] for tag in tokens if len(tag) and tag[0] == '-' and len(tag)]
@@ -55,11 +56,11 @@ def main():
         if not len(match):
             pass
         query = {'$and': match}
-        app.logger.debug(query)
+        log.info(query)
         entries = list(db.entries.find(query, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True, 'image': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
         search_string = " ".join(tags) + (" -" + " -".join(anti_tags) if len(anti_tags) else "") + (' "' + full_text + '"' if full_text else "")
 
-    app.logger.debug("Found %d results" % len(entries))    
+    log.info("Found %d results" % len(entries))    
 
     # full response
     if page == 0:
@@ -88,7 +89,7 @@ def main():
 
 @app.route("/<string:entry_id>") 
 def entry(entry_id):
-    app.logger.debug("/(entry)")    
+    log.info("/(entry)")    
     if 'q' in request.args or 'p' in request.args:
         return ""
     entry = None
@@ -112,9 +113,9 @@ def entry(entry_id):
 def update():
 
     # parse data
-    app.logger.debug("/update")
+    log.info("/update")
     data = {key: value[0] for (key, value) in dict(request.form).items()}
-    app.logger.debug(data)
+    log.info(data)
     try:
         entry_id = data['entry_id']
         content = str(data['content']).strip()        
@@ -129,7 +130,7 @@ def update():
         if 'image_data' in request.files:        
             image_data = Image.open(request.files['image_data'].stream)
     except Exception as e:
-        app.logger.error(e)
+        log.error(log.exc(e))
         return "Parsing failed", 400
 
     # unpack facet tags
@@ -155,15 +156,15 @@ def update():
         try:
             entry_id = db.entries.insert({'t': t, 'location': location, 'tags': tags, 'content': content, 'patches': []})
             entry_id = str(entry_id)
-            app.logger.debug("New entry: %s" % entry_id)
+            log.info("New entry: %s" % entry_id)
         except Exception as e:
-            app.logger.error(e)
+            log.error(log.exc(e))
             return "Insert failed", 400
         if image_data:
             if not image:
                 image = entry_id
             image_path = os.path.join(os.path.dirname(__file__), "static", "data", "images", str(image)[-1], "%s.png" % str(image))
-            app.logger.debug("image_path: %s" % image_path)
+            log.info("image_path: %s" % image_path)
             image_data.save(image_path)
             db.entries.update_one({'_id': ObjectId(entry_id)}, {'$set': {'image': image}})            
 
@@ -178,7 +179,7 @@ def update():
         try:
             db.entries.update_one({'_id': ObjectId(entry_id)}, update)
         except Exception as e:
-            app.logger.error(e)
+            log.error(log.exc(e))
             return "Update failed", 400
 
     return entry_id
@@ -186,11 +187,11 @@ def update():
 
 @app.route("/delete", methods=['POST']) 
 def delete():
-    app.logger.debug("/delete")        
+    log.info("/delete")        
     try:
         db.entries.delete_one({'_id': ObjectId(request.form['entry_id'])})
     except Exception as e:
-        app.logger.error(e)
+        log.error(log.exc(e))
         return "Delete failed", 400
     return "Success"
     
@@ -207,10 +208,11 @@ def unpack(entries):
                 lonlat = geohash.decode(entry['location'])
                 entry['location'] = {'geohash': entry['location'], 'lonlat': lonlat, 'place': place}
             entry['tags'] = ' '.join(entry['tags'])        
-            entry['folder'] = str(entry['image'])[-1]
+            if 'image' in entry:
+                entry['folder'] = str(entry['image'])[-1]
         except Exception as e:
-            app.logger.error(e)
-            app.logger.debug(entry)
+            log.error(log.exc(e))
+            log.info(entry)
     return entries
 
 
