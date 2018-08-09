@@ -1,5 +1,5 @@
 DIR=/Users/house/Projects/now_here/backup
-mongodump -d nh -o $DIR
+/usr/local/bin/mongodump -d nh -o $DIR
 tar -zcvf $DIR.tar.gz $DIR
 rm -r $DIR
 

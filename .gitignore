@@ -5,3 +5,4 @@ logs
 config.yaml
 migration
 static/data
+backup.tar.gz
