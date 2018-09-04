@@ -14,12 +14,12 @@ Deploy behind nginx with `./launch.sh`
 
 ### todo
 
-Notes.app pull (when note is older than a week)
-tool to normalize tags (what, is it 2004?)
-
-Applescript is slow as shit
-2739 / 1.5s
-~30 minutes to run once
+Notes.app pull (when note is older than a week)  
+tool to normalize tags (what, is it 2004?)  
+  
+Applescript is slow as shit  
+2739 / 1.5s  
+~30 minutes to run once  
 
 
 ### install
@@ -39,11 +39,11 @@ pip3 install pytz
 
 ### server
 
-/usr/local/etc/nginx/nginx.conf 
-/usr/local/etc/mongod.conf
-
-brew services restart nginx
-brew services restart mongodb
+/usr/local/etc/nginx/nginx.conf  
+/usr/local/etc/mongod.conf  
+  
+brew services restart nginx  
+brew services restart mongodb  
 
 
 ### ref

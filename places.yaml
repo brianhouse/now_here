@@ -31,6 +31,7 @@ hash_to_name:
     9q5f: Pasadena
     ud6f: Maajaam
     ud9d: Tallinn
+    ke7g: Johannesburg
 
 name_to_hash:
     Baltimore: dqcx88sende4
@@ -55,5 +56,6 @@ name_to_hash:
     Maajaam: ud6fs2f5bp8p
     Tallinn: ud9d48fkznwj
     Pawtucket: drmnphx53qyv
-    
+    Johannesburg: ke7fvz6s1mq5
+
 default_name: Providence

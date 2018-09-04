@@ -1,7 +1,6 @@
 import os, calendar, string, re, geohash, datetime, diff_match_patch, yaml, shutil
 from dateutil import parser
-from .log import log
-from .config import config
+from .log_config import log, config
 
 with open(os.path.join(os.path.dirname(__file__), "..", "places.yaml")) as f:
     y = yaml.load(f)

@@ -1,4 +1,5 @@
-import os, shutil, __main__, yaml
+import os, logging, __main__, sys, yaml
+import logging.handlers
 
 # look for a config file in these directories, in this order:
 directories = [ os.path.dirname(__main__.__file__) if hasattr(__main__, '__file__') else None,                      # directory of main (if exists)
@@ -29,7 +30,6 @@ class Config(dict):
         data = yaml.load(f)
         dict.__init__(self, data)
         f.close()
-        print("Loaded config from %s" % self.conf)
         
     def __missing__(self, key):
         raise ConfigError(key, self.conf)
@@ -44,3 +44,54 @@ class ConfigError(Exception):
         
             
 config = Config()
+
+try:
+    name = os.path.basename(__main__.__file__).split('.')[0]    # log identifier/file will be the same as the file being run
+    if name == "__main__":
+        name = os.path.dirname(__main__.__file__).split('/')[-1]
+except AttributeError:
+    name = "main"                       ## custom
+    
+log = logging.getLogger(name)
+log.setLevel(logging.DEBUG)
+log.propagate = False
+
+try:
+    log_to_file = config['log']
+except ConfigError:
+    log_to_file = False
+logpath = None
+if log_to_file:        
+    logdir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "logs"))
+    if not os.path.isdir(logdir):
+        os.makedirs(logdir)
+    logpath = os.path.join(logdir, "%s.log" % name)
+    logfile = logging.handlers.TimedRotatingFileHandler(logpath, 'midnight')
+    logfile.setLevel(logging.DEBUG)
+    log.addHandler(logfile)
+
+try:
+    log_to_terminal = config['tail']
+except ConfigError:
+    log_to_terminal = True
+if log_to_terminal:
+    terminal = logging.StreamHandler(sys.stdout)    
+    terminal.setLevel(logging.DEBUG)
+    log.addHandler(terminal)
+
+formatter = logging.Formatter("%(asctime)s |%(levelname)s| %(message)s <%(filename)s:%(lineno)d>")            
+
+if log_to_file:
+    logfile.setFormatter(formatter)
+if log_to_terminal:    
+    terminal.setFormatter(formatter)
+
+log.info("Loaded config from %s" % config.conf)
+if logpath is not None:
+    log.info("Writing logs to %s" % logpath)
+
+def exc(e):
+    return "%s <%s:%s> %s" % (sys.exc_info()[0].__name__, os.path.split(sys.exc_info()[2].tb_frame.f_code.co_filename)[1], sys.exc_info()[2].tb_lineno, e)
+
+log.exc = exc
+
