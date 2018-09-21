@@ -42,11 +42,15 @@ def fetch_email(delete=False):
             messages.append(message)
             server.store(mail, '+FLAGS', ('\\Deleted' if delete else '\\Seen'))
         except Exception as e:
-            print(e)
+            log.error(log.exc(e))
     return messages        
   
 def main():
-    messages = fetch_email()
+    try:
+        messages = fetch_email()
+    except Exception as e:
+        log.warning("Could not fetch mail: %s" % e)
+        return
     log.info("Found %d messages" % len(messages))
     for message in messages:
         safe = False
