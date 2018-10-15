@@ -66,7 +66,7 @@ if log_to_file:
     if not os.path.isdir(logdir):
         os.makedirs(logdir)
     logpath = os.path.join(logdir, "%s.log" % name)
-    logfile = logging.handlers.TimedRotatingFileHandler(logpath, 'midnight')
+    logfile = logging.handlers.TimedRotatingFileHandler(logpath, 'midnight', encoding="utf-8")
     logfile.setLevel(logging.DEBUG)
     log.addHandler(logfile)
 
@@ -75,7 +75,7 @@ try:
 except ConfigError:
     log_to_terminal = True
 if log_to_terminal:
-    terminal = logging.StreamHandler(sys.stdout)    
+    terminal = logging.StreamHandler(sys.stdout, encoding="utf-8")    
     terminal.setLevel(logging.DEBUG)
     log.addHandler(terminal)
 
