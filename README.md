@@ -36,6 +36,7 @@ pip3 install PyYAML
 pip3 install python-geohash  
 pip3 install dateutil  
 pip3 install pytz  
+pip3 install boto3
 
 ### server
 
