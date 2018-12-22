@@ -203,13 +203,17 @@ def unpack(entries):
             if 'patches' in entry:
                 for patch in entry['patches']:
                     patch[0] = str(get_datestring(patch[0])).split(" ")[0]
-            if 'location' in entry and entry['location'] is not None:    
-                place = hash_to_name[entry['location'][0:4]] if entry['location'][0:4] in hash_to_name else entry['location']
-                lonlat = geohash.decode(entry['location'])
-                entry['location'] = {'geohash': entry['location'], 'lonlat': lonlat, 'place': place}
             entry['tags'] = ' '.join(entry['tags'])        
             if 'image' in entry:
                 entry['folder'] = str(entry['image'])[-1]
+            if 'location' in entry and entry['location'] is not None:    
+                try:
+                    place = hash_to_name[entry['location'][0:4]] if entry['location'][0:4] in hash_to_name else entry['location']
+                    lonlat = geohash.decode(entry['location'])
+                    entry['location'] = {'geohash': entry['location'], 'lonlat': lonlat, 'place': place}
+                except ValueError as e:
+                    log.error(log.exc(e))
+                    entry['location'] = None
         except Exception as e:
             log.error(log.exc(e))
             log.info(entry)

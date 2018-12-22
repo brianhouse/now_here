@@ -110,8 +110,12 @@
                 if (place == undefined) place = geohash;
                 p = "<a target='_new' href='http://maps.google.com/?q=" + lat + "," + lon + "'>" + place + "</a>";
                 $('#display_location_new').html(p);
-            }                
-            navigator.geolocation.getCurrentPosition(getGeo);                    
+            }        
+            try {        
+                navigator.geolocation.getCurrentPosition(getGeo);                    
+            } catch (e) {
+                console.log("Location blocked by browser");
+            }
         });        
 
         $(window).scroll(function() {
