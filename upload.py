@@ -8,4 +8,7 @@ s3 = boto3.resource('s3')
 #     print(bucket.name)
 
 data = open("/Users/house/Projects/now_here/backup.tar.gz", 'rb')
-s3.Bucket('now-here-backup').put_object(Key="backup.tar.gz", Body=data)
+try:
+    s3.Bucket('brian-house-archive').put_object(Key="now_here.tar.gz", Body=data)
+except Exception as e:
+    print("Upload failed: %" % e)

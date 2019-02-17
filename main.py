@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/local/bin/python3
 
 import os, datetime, yaml, json, math, io
 from flask import Flask, render_template, request
@@ -222,4 +222,4 @@ def unpack(entries):
 
 application = app
 if __name__ == "__main__":
-    application.run(host='0.0.0.0', debug=True)
+    application.run(host='0.0.0.0', debug=False, port=8080)
