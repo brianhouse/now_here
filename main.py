@@ -114,7 +114,7 @@ def update():
 
     # parse data
     log.info("/update")
-    data = {key: value[0] for (key, value) in dict(request.form).items()}
+    data = {key: value for (key, value) in dict(request.form).items()}
     log.info(data)
     try:
         entry_id = data['entry_id']
@@ -154,7 +154,7 @@ def update():
     # create new
     if entry_id == "new":
         try:
-            entry_id = db.entries.insert({'t': t, 'location': location, 'tags': tags, 'content': content, 'patches': []})
+            entry_id = db.entries.insert_one({'t': t, 'location': location, 'tags': tags, 'content': content, 'patches': []})
             entry_id = str(entry_id)
             log.info("New entry: %s" % entry_id)
         except Exception as e:

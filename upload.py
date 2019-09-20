@@ -11,4 +11,4 @@ data = open("/Users/house/Projects/now_here/backup.tar.gz", 'rb')
 try:
     s3.Bucket('brian-house-archive').put_object(Key="now_here.tar.gz", Body=data)
 except Exception as e:
-    print("Upload failed: %" % e)
+    print("Upload failed: %s" % e)
