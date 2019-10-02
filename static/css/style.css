@@ -153,3 +153,29 @@ hr {
     border-bottom: 1px solid #ccc;
     padding-bottom: 50px;
 }
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: black;
+        color: white;
+    }
+
+    #main {
+        background-color: black;
+        color: white;
+    }
+
+    a {
+        color: white;
+    }
+
+    #tagcloud a {
+        color: white;
+    }    
+
+    .entry .entry_content {
+        background-color: black;
+        color: white;
+    }
+
+}
