@@ -3,7 +3,7 @@ from dateutil import parser
 from .log_config import log, config
 
 with open(os.path.join(os.path.dirname(__file__), "..", "places.yaml")) as f:
-    y = yaml.load(f)
+    y = yaml.safe_load(f)
     hash_to_name = y['hash_to_name']
     name_to_hash = y['name_to_hash']
     default_name = y['default_name']    

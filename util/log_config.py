@@ -1,4 +1,4 @@
-import os, logging, __main__, sys, yaml
+import os, logging, __main__, sys, yaml, shutil
 import logging.handlers
 
 # look for a config file in these directories, in this order:
@@ -27,7 +27,7 @@ class Config(dict):
                 return
         self.conf = conf
         f = open(self.conf)                
-        data = yaml.load(f)
+        data = yaml.safe_load(f)
         dict.__init__(self, data)
         f.close()
         
@@ -75,7 +75,7 @@ try:
 except ConfigError:
     log_to_terminal = True
 if log_to_terminal:
-    terminal = logging.StreamHandler(sys.stdout, encoding="utf-8")    
+    terminal = logging.StreamHandler(sys.stdout)
     terminal.setLevel(logging.DEBUG)
     log.addHandler(terminal)
 
