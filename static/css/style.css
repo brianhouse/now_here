@@ -8,10 +8,10 @@ div {
 }
 
 input {
-    font-family: monoco, courier, monospace;    
+    font-family: monoco, courier, monospace;
     font-size: 12px;
     padding: 0px;
-    margin: 0px; 
+    margin: 0px;
     border: none;
 }
 
@@ -30,24 +30,24 @@ textarea {
     }
 
 #main {
-    width: 660px; 
-    margin: auto;  
+    width: 660px;
+    margin: auto;
     background-color: white;
     padding-bottom: 20px;
-    overflow: hidden;         
-}       
+    overflow: hidden;
+}
 
 #searchbar {
     border: none;
     height: 25px;
-    padding-left: 0px;    
+    padding-left: 0px;
 }
 
     #searchbar input {
         width: 400px;
     }
 
-#tagcloud {    
+#tagcloud {
     padding: 0px;
     text-align: justify;
     margin-bottom: 20px;
@@ -67,15 +67,15 @@ textarea {
         }
 
         #tagcloud a.tag_2 {
-            color: #666;            
+            color: #666;
         }
 
         #tagcloud a.tag_3 {
-            color: #333;            
+            color: #333;
         }
 
         #tagcloud a.tag_4 {
-            color: #000;            
+            color: #000;
         }
 
 .entry {
@@ -93,7 +93,7 @@ textarea {
     .entry .metadata {
         padding: 5px;
         padding-left: 10px;
-        padding-right: 10px;    
+        padding-right: 10px;
         background-color: #ccc;
     }
 
@@ -110,7 +110,7 @@ textarea {
         .entry .metadata .display_location {
             width: 210px;
             float: right;
-            text-align: right;            
+            text-align: right;
             background-color: inherit;
         }
 
@@ -135,8 +135,8 @@ textarea {
         padding-left: 0px;
         padding-right: 0px;
         line-height: 14px;
-        border: 0px;        
-    }    
+        border: 0px;
+    }
 
 img {
     margin-top: 10px;
@@ -156,12 +156,12 @@ hr {
 
 @media (prefers-color-scheme: dark) {
     body {
-        background-color: black;
+        background-color: #111;
         color: white;
     }
 
     #main {
-        background-color: black;
+        background-color: #111;
         color: white;
     }
 
@@ -171,10 +171,10 @@ hr {
 
     #tagcloud a {
         color: white;
-    }    
+    }
 
     .entry .entry_content {
-        background-color: black;
+        background-color: #111;
         color: white;
     }
 
