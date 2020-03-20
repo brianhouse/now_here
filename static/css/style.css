@@ -156,12 +156,12 @@ hr {
 
 @media (prefers-color-scheme: dark) {
     body {
-        background-color: #111;
+        background-color: #222;
         color: white;
     }
 
     #main {
-        background-color: #111;
+        background-color: #222;
         color: white;
     }
 
@@ -174,7 +174,7 @@ hr {
     }
 
     .entry .entry_content {
-        background-color: #111;
+        background-color: #222;
         color: white;
     }
 
