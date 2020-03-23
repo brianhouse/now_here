@@ -11,7 +11,7 @@ app.logger = log
 
 @app.route("/")
 def main():
-    log.info("/")        
+    log.info("/")
 
     # new entry
     if not 'q' in request.args:
@@ -19,10 +19,10 @@ def main():
         entry = {   '_id': "new",
                     'tags': "",
                     'content': "",
-                    'location': None, 
+                    'location': None,
                     'date': get_datestring().split('.')[0]
                     }
-        entries = [entry]    
+        entries = [entry]
         return render_template("page.html", entries=[entry], places=hash_to_name)
 
     # get request
@@ -33,7 +33,7 @@ def main():
         page = 0
 
     # recent entries
-    if not len(q):  
+    if not len(q):
         log.info("RECENT page=%s" % (page,))
         entries = list(db.entries.find(None, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True, 'image': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
         search_string = ""
@@ -52,7 +52,7 @@ def main():
         if len(anti_tags):
             match.append({'tags': {'$nin': anti_tags}})
         if full_text:
-            match.append({"$text": {"$search": '\"%s\"' % full_text}})     
+            match.append({"$text": {"$search": '\"%s\"' % full_text}})
         if not len(match):
             pass
         query = {'$and': match}
@@ -60,17 +60,17 @@ def main():
         entries = list(db.entries.find(query, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True, 'image': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
         search_string = " ".join(tags) + (" -" + " -".join(anti_tags) if len(anti_tags) else "") + (' "' + full_text + '"' if full_text else "")
 
-    log.info("Found %d results" % len(entries))    
+    log.info("Found %d results" % len(entries))
 
     # full response
     if page == 0:
 
         # create tag cloud
         cloud = []
-        for entry in entries:            
+        for entry in entries:
             cloud.extend(entry['tags'])
-        cloud = dict((s, cloud.count(s)) for s in set(cloud))    
-        if len(cloud):                            
+        cloud = dict((s, cloud.count(s)) for s in set(cloud))
+        if len(cloud):
             min_count = min(cloud.values())
             max_count = max(max(cloud.values()), min_count + 1)
             for tag, count in cloud.items():
@@ -87,9 +87,9 @@ def main():
         return render_template("content.html", entries=unpack(entries[:10]))
 
 
-@app.route("/<string:entry_id>") 
+@app.route("/<string:entry_id>")
 def entry(entry_id):
-    log.info("/(entry)")    
+    log.info("/(entry)")
     if 'q' in request.args or 'p' in request.args:
         return ""
     entry = None
@@ -109,7 +109,7 @@ def entry(entry_id):
     return render_template("page.html", entries=unpack(entries), places=hash_to_name)
 
 
-@app.route("/update", methods=['POST']) 
+@app.route("/update", methods=['POST'])
 def update():
 
     # parse data
@@ -118,16 +118,18 @@ def update():
     log.info(data)
     try:
         entry_id = data['entry_id']
-        content = str(data['content']).strip()        
+        content = str(data['content']).strip()
         t = parse_datestring(data['date']) if 'date' in data else get_t()
         tags = list(set(tag.lower().replace('.', '_') for tag in data['tags'].split(','))) if 'tags' in data else []
+        if 'new' in tags and 'note' in tags:
+            raise Exception("Notes.app junk")
         location = data['location'] if 'location' in data else None
         if location is None or not len(location.strip()):
             location = default_name
         location = name_to_hash[location] if location in name_to_hash else location
         image = data['image'] if 'image' in data else None
         image_data = None
-        if 'image_data' in request.files:        
+        if 'image_data' in request.files:
             image_data = Image.open(request.files['image_data'].stream)
     except Exception as e:
         log.error(log.exc(e))
@@ -166,7 +168,7 @@ def update():
             image_path = os.path.join(os.path.dirname(__file__), "static", "data", "images", str(image)[-1], "%s.png" % str(image))
             log.info("image_path: %s" % image_path)
             image_data.save(image_path)
-            db.entries.update_one({'_id': ObjectId(entry_id)}, {'$set': {'image': image}})            
+            db.entries.update_one({'_id': ObjectId(entry_id)}, {'$set': {'image': image}})
 
     # update
     else:
@@ -185,16 +187,16 @@ def update():
     return entry_id
 
 
-@app.route("/delete", methods=['POST']) 
+@app.route("/delete", methods=['POST'])
 def delete():
-    log.info("/delete")        
+    log.info("/delete")
     try:
         db.entries.delete_one({'_id': ObjectId(request.form['entry_id'])})
     except Exception as e:
         log.error(log.exc(e))
         return "Delete failed", 400
     return "Success"
-    
+
 
 def unpack(entries):
     for entry in entries:
@@ -203,10 +205,10 @@ def unpack(entries):
             if 'patches' in entry:
                 for patch in entry['patches']:
                     patch[0] = str(get_datestring(patch[0])).split(" ")[0]
-            entry['tags'] = ' '.join(entry['tags'])        
+            entry['tags'] = ' '.join(entry['tags'])
             if 'image' in entry:
                 entry['folder'] = str(entry['image'])[-1]
-            if 'location' in entry and entry['location'] is not None:    
+            if 'location' in entry and entry['location'] is not None:
                 try:
                     place = hash_to_name[entry['location'][0:4]] if entry['location'][0:4] in hash_to_name else entry['location']
                     lonlat = geohash.decode(entry['location'])

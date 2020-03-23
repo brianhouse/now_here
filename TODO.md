@@ -1,0 +1,2 @@
+- cron notes_script
+- delete location after X

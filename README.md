@@ -12,14 +12,9 @@ Test/develop with `./main.py`
 Deploy behind nginx with `./launch.sh`   
 
 
-### todo
+### bugs
 
-Notes.app pull (when note is older than a week)  
-tool to normalize tags (what, is it 2004?)  
-  
-Applescript is slow as shit  
-2739 / 1.5s  
-~30 minutes to run once  
+applescript on Notes.app is pretty broken in Catalina. delete function doesn't work
 
 
 ### install
@@ -42,7 +37,7 @@ pip3 install boto3
 
 /usr/local/etc/nginx/nginx.conf  
 /usr/local/etc/mongod.conf  
-  
+
 brew services restart nginx  
 brew services restart mongodb  
 
