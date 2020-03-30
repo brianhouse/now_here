@@ -16,10 +16,10 @@ hash_to_name:
     9xj3: Denver
     9xj9: Denver
     u01w: France
-    u628: Gothenburg    
+    u628: Gothenburg
     7jf8: Lencois
     dp9k: Milwaukee
-    7nyz: Natal    
+    7nyz: Natal
     dr5r: NYC
     dr5q: NYC
     dr72: NYC
@@ -46,10 +46,10 @@ name_to_hash:
     Gothenburg: u62823xde3p4
     Lencois: 7jf8d451wvzf
     Milwaukee: dp9kzdury8ym
-    Natal: 7nyznc0htqfm 
-    NYC: dr5regy6rc6y 
+    Natal: 7nyznc0htqfm
+    NYC: dr5regy6rc6y
     Providence: drmjyvyf2kem
-    Sao Paulo: 6gyf49n9kyb9 
+    Sao Paulo: 6gyf49n9kyb9
     Stockholm: u6sce0d2nfjh
     Sweden: u6tq01zzcj9g
     Pasadena: 9q5fqbypq8js
@@ -58,4 +58,4 @@ name_to_hash:
     Pawtucket: drmnphx53qyv
     Johannesburg: ke7fvz6s1mq5
 
-default_name: Providence
+default_name: NYC

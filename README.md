@@ -6,10 +6,14 @@ Simple browser-based note-taking.
 - location aware
 - stores diffs
 - uses Flask / Mongo / nginx
+- integration with email and Notes.app
+- daily backups
 
 Test/develop with `./main.py`  
 
-Deploy behind nginx with `./launch.sh`   
+Deploy behind nginx with `./launch.sh`
+
+Backup, fetch email, and transfer from Notes with `crontab`
 
 
 ### bugs
@@ -19,29 +23,29 @@ applescript on Notes.app is pretty broken in Catalina. delete function doesn't w
 
 ### install
 
-brew install mongodb  
-brew install uwsgi  
-pip3 install flask  
-pip3 install uwsgi  
-pip3 install pymongo  
-pip3 install diff-match-patch  
-pip3 install requests  
-pip3 install pillow  
-pip3 install PyYAML  
-pip3 install python-geohash  
-pip3 install dateutil  
-pip3 install pytz  
-pip3 install boto3
+    brew install mongodb  
+    brew install uwsgi  
+    sudo pip3 install flask  
+    sudo pip3 install uwsgi  
+    sudo pip3 install pymongo  
+    sudo pip3 install diff-match-patch  
+    sudo pip3 install requests  
+    sudo pip3 install pillow  
+    sudo pip3 install PyYAML  
+    sudo pip3 install python-geohash  
+    sudo pip3 install dateutil  
+    sudo pip3 install pytz  
+    sudo pip3 install boto3
 
 ### server
 
-/usr/local/etc/nginx/nginx.conf  
-/usr/local/etc/mongod.conf  
+    /usr/local/etc/nginx/nginx.conf  
+    /usr/local/etc/mongod.conf  
 
-brew services restart nginx  
-brew services restart mongodb  
+    brew services restart nginx  
+    brew services restart mongodb  
 
 
 ### ref
 
-https://gist.github.com/mplewis/6076082
+    https://gist.github.com/mplewis/6076082
