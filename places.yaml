@@ -32,6 +32,7 @@ hash_to_name:
     ud6f: Maajaam
     ud9d: Tallinn
     ke7g: Johannesburg
+    c20f: Portland
 
 name_to_hash:
     Baltimore: dqcx88sende4
@@ -57,5 +58,4 @@ name_to_hash:
     Tallinn: ud9d48fkznwj
     Pawtucket: drmnphx53qyv
     Johannesburg: ke7fvz6s1mq5
-
-default_name: NYC
+    Portland: c20f86rj4ptb

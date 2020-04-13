@@ -124,8 +124,8 @@ def update():
         if 'new' in tags and 'note' in tags:
             raise Exception("Notes.app junk")
         location = data['location'] if 'location' in data else None
-        if location is None or not len(location.strip()):
-            location = default_name
+        if not len(location.strip()):
+            location = None
         location = name_to_hash[location] if location in name_to_hash else location
         image = data['image'] if 'image' in data else None
         image_data = None
@@ -224,4 +224,4 @@ def unpack(entries):
 
 application = app
 if __name__ == "__main__":
-    application.run(host='0.0.0.0', debug=False, port=8080)
+    application.run(host='0.0.0.0', debug=False, port=8080, ssl_context='adhoc')

@@ -43,8 +43,8 @@ def fetch_email(delete=False):
             server.store(mail, '+FLAGS', ('\\Deleted' if delete else '\\Seen'))
         except Exception as e:
             log.error(log.exc(e))
-    return messages        
-  
+    return messages
+
 def main():
     try:
         messages = fetch_email()
@@ -54,7 +54,7 @@ def main():
     log.info("Found %d messages" % len(messages))
     for message in messages:
         safe = False
-        for address in config['addresses']:        
+        for address in config['addresses']:
             if address in message['from']:
                 safe = True
                 break
@@ -65,8 +65,8 @@ def main():
         entry['entry_id'] = "new"
         entry['tags'] = ','.join(message['subject'].split(' '))
         entry['content'] = message['body']
-        entry['date'] = message['date']    
-        entry['location'] = default_name
+        entry['date'] = message['date']
+        entry['location'] = None
         log.info(entry)
         files = None
         try:
@@ -82,7 +82,7 @@ def main():
             log.error(log.exc(e))
         else:
             log.info("--> %s: %s" % (r.status_code, r.text))
-                    
+
 
 if __name__ == "__main__":
     main()

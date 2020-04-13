@@ -6,12 +6,11 @@ with open(os.path.join(os.path.dirname(__file__), "..", "places.yaml")) as f:
     y = yaml.safe_load(f)
     hash_to_name = y['hash_to_name']
     name_to_hash = y['name_to_hash']
-    default_name = y['default_name']    
     
 dmp = diff_match_patch.diff_match_patch()
 
 def get_reverse_patch(original, new):
-    patches = dmp.patch_make(new, original)    
+    patches = dmp.patch_make(new, original)
     return dmp.patch_toText(patches)
 
 def apply_reverse_patch(new, patch):
@@ -22,9 +21,9 @@ def depunctuate(s, exclude=None, replacement=''):
     p = string.punctuation
     if exclude:
         for c in exclude:
-            p = p.replace(c, '')    
+            p = p.replace(c, '')
     regex = re.compile('[%s]' % re.escape(p))
-    return regex.sub(replacement, s) 
+    return regex.sub(replacement, s)
 
 def parse_datestring(string):
     """We are purposefully ignoring timezone and storing as if everything was UTC"""
@@ -45,4 +44,3 @@ def get_datestring(t=None):
     if not t:
         t = get_t()
     return str(datetime.datetime.utcfromtimestamp(t))
-
