@@ -1,8 +1,8 @@
 @reboot /Users/house/Studio/now_here/launch.sh
 @reboot /Users/house/Studio/now_here/backup.sh
-@reboot /Users/house/Studio/now_here/notes.sh
+@reboot /Users/house/Studio/now_here/notes.sh > /dev/null
 @reboot /Users/house/Studio/now_here/fetch.py
 
 29 */4 * * * /Users/house/Studio/now_here/backup.sh
-29 */4 * * * /Users/house/Studio/now_here/notes.sh
+29 */4 * * * /Users/house/Studio/now_here/notes.sh > /dev/null
 25 */4 * * * /Users/house/Studio/now_here/fetch.py
