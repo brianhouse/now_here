@@ -124,7 +124,7 @@ def update():
         if 'new' in tags and 'note' in tags:
             raise Exception("Notes.app junk")
         location = data['location'] if 'location' in data else None
-        if not len(location.strip()):
+        if location is not None and not len(location.strip()):
             location = None
         location = name_to_hash[location] if location in name_to_hash else location
         image = data['image'] if 'image' in data else None
