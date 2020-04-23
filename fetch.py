@@ -71,12 +71,12 @@ def main():
         files = None
         try:
             files = {'image_data': io.BytesIO(message['attachments'][0]['data'])}
-        except KeyError:
+        except (KeyError, IndexError):
             pass
         except Exception as e:
             log.error(log.exc(e))
         try:
-            r = requests.post("http://localhost:%s/update" % config['port'], data=entry, files=files)
+            r = requests.post("https://localhost:%s/update" % config['port'], data=entry, files=files, verify=False)
         except Exception as e:
             success = False
             log.error(log.exc(e))

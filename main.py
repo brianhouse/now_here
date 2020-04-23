@@ -156,8 +156,8 @@ def update():
     # create new
     if entry_id == "new":
         try:
-            entry_id = db.entries.insert_one({'t': t, 'location': location, 'tags': tags, 'content': content, 'patches': []})
-            entry_id = str(entry_id)
+            results = db.entries.insert_one({'t': t, 'location': location, 'tags': tags, 'content': content, 'patches': []})
+            entry_id = str(results.inserted_id)
             log.info("New entry: %s" % entry_id)
         except Exception as e:
             log.error(log.exc(e))
