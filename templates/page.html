@@ -1,13 +1,13 @@
-<!doctype html> 
-<html lang="en"> 
+<!doctype html>
+<html lang="en">
 <head>
     <title>now/here</title>
-    <meta charset="utf-8"/>    
-    <link rel="icon" href="/static/favicon.png" />    
+    <meta charset="utf-8"/>
+    <link rel="icon" href="/static/favicon.png" />
     <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
     <script type="text/javascript" src="/static/js/jquery-1.7.min.js"></script>
     <script type="text/javascript" src="/static/js/jquery.autogrow-textarea.js"></script>
-    <script type="text/javascript" src="/static/js/geohash.js"></script>  	        
+    <script type="text/javascript" src="/static/js/geohash.js"></script>
     <script type="text/javascript">
 
         var places = {{ places | safe }};
@@ -22,14 +22,14 @@
             }
             $.ajax({
                 type: 'POST',
-                url: '/update',                
+                url: '/update',
                 data: { entry_id: entryID,
-                        location: $('#location_' + entryID).val(), 
-                        tags: fixTags(tags), 
+                        location: $('#location_' + entryID).val(),
+                        tags: fixTags(tags),
                         date: $('#date_' + entryID).val(),
                         content: content
                         },
-                success: function(data) {                
+                success: function(data) {
                     if (entryID == "new") {
                         search($('#tags_' + entryID).val());
                     } else {
@@ -47,9 +47,9 @@
             if (confirm("Really delete?")) {
                 $.ajax({
                     type: 'POST',
-                    url: '/delete', 
+                    url: '/delete',
                     data: { entry_id: entryID },
-                    success: function(data) {        
+                    success: function(data) {
                         window.location.reload();
                     },
                     error: function(data) {
@@ -69,7 +69,7 @@
                 var tags = tokens.filter(function(element, index, array) {
                     return (index % 2 === 0);
                 });
-                tags = fixTags(tags);            
+                tags = fixTags(tags);
                 var fullText = tokens.filter(function(element, index, array) {
                     return (index % 2 === 1);
                 });
@@ -78,7 +78,7 @@
                     if (tags.length > 0) fullText = ',' + fullText;
                 } else {
                     fullText = "";
-                }     
+                }
             }
             var location = "?q=" + tags + fullText + "&p=" + page;
             if (page == 0) {
@@ -92,54 +92,67 @@
             tags = "" + tags;
             tags = tags.replace(/,/g, ' ').replace(/[,\/#!?@+|[\]><$%\^&\*;:{}=\`~()']/g,"").replace(/\./g, '_').replace(/ /g, ',').toLowerCase();
             tags = tags.split(',');
-            tags = tags.filter(function(tag) { 
+            tags = tags.filter(function(tag) {
               return tag.length > 0;
-            });              
+            });
             tags = tags.join(',');
             return tags;
         }
 
-        $(document).ready(function() {           
+        var makeEditable = function(element) {
+            let n = $('<textarea/>', {
+                    id: $(element).attr('id'),
+                    onChange: $(element).attr('onChange'),
+                    onKeyDown: $(element).attr('onKeyDown'),
+                    class: "entry_content",
+                    html: $(element).html()
+                    })
+            $(element).replaceWith(n);
+            n.focus();
+            n.autogrow();
+        }
+
+        $(document).ready(function() {
             $('.entry_content').autogrow();
             var getGeo = function(geo) {
                 var lon = geo.coords.longitude;
                 var lat = geo.coords.latitude;
-                var geohash = encodeGeoHash(lat, lon);                        
+                var geohash = encodeGeoHash(lat, lon);
                 $('#location_new').val(geohash);
                 var place = places[geohash.substr(0, 4)];
                 if (place == undefined) place = geohash;
                 p = "<a target='_new' href='http://maps.google.com/?q=" + lat + "," + lon + "'>" + place + "</a>";
                 $('#display_location_new').html(p);
-            }        
-            try {        
-                navigator.geolocation.getCurrentPosition(getGeo);                    
+            }
+            try {
+                navigator.geolocation.getCurrentPosition(getGeo);
             } catch (e) {
                 console.log("Location blocked by browser");
             }
-        });        
+        });
 
         $(window).scroll(function() {
-            if ($(window).scrollTop() == $(document).height() - $(window).height()) {                
+            if ($(window).scrollTop() == $(document).height() - $(window).height()) {
                 page += 1;
                 $.ajax({
                     type: 'GET',
                     url: search($('#search').val(), page),
                     success: function(partial) {
-                        $("#more").replaceWith(partial)                        
+                        $("#more").replaceWith(partial)
                         $('.entry_content').autogrow();
                     },
                     error: function(data) {
                         alert(data.responseText);
                     }
-                });                             
+                });
             }
-        });        
+        });
 
     </script>
 </head>
 
 <body>
-    <div id="main">        
+    <div id="main">
         <div id="searchbar">
             <a href="/">NEW</a> - <a href="/?q">RECENT</a> - SEARCH: <input id="search" type="text" onChange="search($('#search').val());" value="{% if search_string != None %}{{ search_string }}{% endif %}" />
         </div>
@@ -149,7 +162,7 @@
                 <a href="javascript:search('{{ tag[0] }}');" class="tag_{{ tag[1] }}">{{ tag[0] }}</a>
             {% endfor %}
         </div>
-        {% endif %}        
+        {% endif %}
         <div id="content">
         {% include "content.html" %}
         </div>

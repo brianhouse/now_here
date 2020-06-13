@@ -1,5 +1,5 @@
 body {
-    font: 12px monoco, courier, monospace;
+    font: 12px courier, monospace;
     background-color: white;
 }
 
@@ -8,7 +8,7 @@ div {
 }
 
 input {
-    font-family: monoco, courier, monospace;
+    font-family: courier, monospace;
     font-size: 12px;
     padding: 0px;
     margin: 0px;
@@ -20,14 +20,26 @@ input {
     }
 
 textarea {
-    font-family: monoco, courier, monospace;
+    font-family: courier, monospace;
     font-size: 12px;
     resize: none;
+    /* background-color: red; */
 }
 
     textarea:focus {
         outline: none;
+        /* background-color: lightblue; */
     }
+
+pre {
+    font-family: courier, monospace;
+    font-size: 12px;
+    margin: 0px;
+    padding: 0px;
+    white-space: pre-wrap;
+    /* background-color: orange; */
+}
+
 
 #main {
     width: 660px;
@@ -83,13 +95,6 @@ textarea {
     margin-bottom: 20px;
 }
 
-    .entry .entry_content {
-        width: 660px;
-        padding-left: 0px;
-        padding-right: 0px;
-        line-height: 14px;
-    }
-
     .entry .metadata {
         padding: 5px;
         padding-left: 10px;
@@ -134,7 +139,7 @@ textarea {
         padding-bottom: 10px;
         padding-left: 0px;
         padding-right: 0px;
-        line-height: 14px;
+        line-height: 15px;
         border: 0px;
     }
 
@@ -145,7 +150,7 @@ img {
 
 a {
     color: black;
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 hr {

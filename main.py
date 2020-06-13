@@ -7,6 +7,8 @@ from PIL import Image
 app = Flask(__name__)
 from util import *
 app.logger = log
+app.jinja_env.filters['linkify'] = linkify
+app.jinja_env.autoescape = False
 
 
 @app.route("/")
@@ -216,6 +218,7 @@ def unpack(entries):
                 except ValueError as e:
                     log.error(log.exc(e))
                     entry['location'] = None
+            # entry['content'] = linkify(entry['content'])
         except Exception as e:
             log.error(log.exc(e))
             log.info(entry)
@@ -224,4 +227,5 @@ def unpack(entries):
 
 application = app
 if __name__ == "__main__":
-    application.run(host='0.0.0.0', debug=False, port=8080, ssl_context='adhoc')
+    # application.run(host='0.0.0.0', debug=False, port=8080, ssl_context='adhoc')
+    application.run(host='0.0.0.0', debug=True, port=7000)

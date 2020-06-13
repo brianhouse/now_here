@@ -16,10 +16,6 @@ Deploy behind nginx with `./launch.sh`
 Backup, fetch email, and transfer from Notes with `crontab`
 
 
-### bugs
-
-applescript on Notes.app is pretty broken in Catalina. delete function doesn't work
-
 
 ### install
 
