@@ -104,11 +104,12 @@
         }
 
         var makeEditable = function(element) {
-            if ($(element).is("textarea")) return;
+            console.log(element);
+            if (!$(element).is("pre")) return;
             $(element).find('.linkified').contents().unwrap();
             let attributes = $(element).prop("attributes");
             let n = $('<textarea/>', {
-                html: $(element).html().replace("https://localhost:8000/?", "nh/?")
+                html: $(element).html().replace("https://localhost:8080/", "nh/")
             });
             $.each(attributes, function() {
                 n.attr(this.name, this.value);
@@ -123,18 +124,24 @@
             if (!$(element).is("textarea") || updating) return;
             let attributes = $(element).prop("attributes");
             let n = $('<pre/>', {
-                html: $(element).html().replace("nh/?", "https://localhost:8000/?").trim()
+                html: $(element).html().replace("nh/", "https://localhost:8080/").trim()
             });
             $.each(attributes, function() {
                 n.attr(this.name, this.value);
             });
             n.linkify({target: "_blank"});
             $(element).replaceWith(n);
+            $('*').on('click', function(e) {
+               e.stopPropagation();
+            });            
             n.css("height", "auto");
         }
 
         $(document).ready(function() {
             $('pre').linkify({target: "_blank"});
+            $('*').on('click', function(e) {
+               e.stopPropagation();
+            });
             var getGeo = function(geo) {
                 var lon = geo.coords.longitude;
                 var lat = geo.coords.latitude;

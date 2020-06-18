@@ -225,3 +225,4 @@ def unpack(entries):
 application = app
 if __name__ == "__main__":
     application.run(host='0.0.0.0', debug=False, port=8080, ssl_context='adhoc')
+    # application.run(host='0.0.0.0', debug=True, port=7000)
