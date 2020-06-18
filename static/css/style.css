@@ -23,12 +23,11 @@ textarea {
     font-family: courier, monospace;
     font-size: 12px;
     resize: none;
-    /* background-color: red; */
+    background-color: lightgreen;
 }
 
     textarea:focus {
         outline: none;
-        /* background-color: lightblue; */
     }
 
 pre {
@@ -38,7 +37,6 @@ pre {
     margin-bottom: 43px;
     padding: 0px;
     white-space: pre-wrap;
-    /* background-color: orange; */
 }
 
 

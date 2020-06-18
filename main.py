@@ -7,8 +7,6 @@ from PIL import Image
 app = Flask(__name__)
 from util import *
 app.logger = log
-app.jinja_env.filters['linkify'] = linkify
-app.jinja_env.autoescape = False
 
 
 @app.route("/")

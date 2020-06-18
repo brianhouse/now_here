@@ -5,8 +5,10 @@
     <meta charset="utf-8"/>
     <link rel="icon" href="/static/favicon.png" />
     <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
-    <script type="text/javascript" src="/static/js/jquery-1.7.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
     <script type="text/javascript" src="/static/js/jquery.autogrow-textarea.js"></script>
+    <script type="text/javascript" src="/static/js/linkify.min.js"></script>
+    <script type="text/javascript" src="/static/js/linkify-jquery.min.js"></script>
     <script type="text/javascript" src="/static/js/geohash.js"></script>
     <script type="text/javascript">
 
@@ -100,11 +102,14 @@
         }
 
         var makeEditable = function(element) {
+            $(element).find('.linkified').contents().unwrap();
             let attributes = $(element).prop("attributes");
-            let n = $('<textarea/>', { html: $(element).html() })
+            let n = $('<textarea/>', { html: $(element).html() });
             $(element).replaceWith(n);
             $.each(attributes, function() {
-                n.attr(this.name, this.value);
+                if (this.name != "onclick") {
+                    n.attr(this.name, this.value);
+                }
             });
             n.focus();
             n.val(n.val() + '\n');
@@ -112,6 +117,9 @@
         }
 
         $(document).ready(function() {
+            $('pre').linkify({
+                target: "_blank"
+            });
             var getGeo = function(geo) {
                 var lon = geo.coords.longitude;
                 var lat = geo.coords.latitude;
