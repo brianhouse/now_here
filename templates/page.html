@@ -112,7 +112,6 @@
         }
 
         $(document).ready(function() {
-            $('.entry_content').autogrow();
             var getGeo = function(geo) {
                 var lon = geo.coords.longitude;
                 var lat = geo.coords.latitude;
@@ -138,7 +137,6 @@
                     url: search($('#search').val(), page),
                     success: function(partial) {
                         $("#more").replaceWith(partial)
-                        $('.entry_content').autogrow();
                     },
                     error: function(data) {
                         alert(data.responseText);
