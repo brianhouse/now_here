@@ -23,7 +23,6 @@ textarea {
     font-family: courier, monospace;
     font-size: 12px;
     resize: none;
-    /* background-color: lightblue; */
 }
 
     textarea:focus {
