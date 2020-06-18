@@ -14,6 +14,7 @@
 
         var places = {{ places | safe }};
         var page = 0;
+        var updating = false;
 
         var updateEntry = function(entryID) {
             console.log("updateEntry [" + entryID + "]")
@@ -22,6 +23,7 @@
             if (!content.length || !tags.length) {
                 return;
             }
+            updating = true;
             $.ajax({
                 type: 'POST',
                 url: '/update',
@@ -102,24 +104,37 @@
         }
 
         var makeEditable = function(element) {
+            if ($(element).is("textarea")) return;
             $(element).find('.linkified').contents().unwrap();
             let attributes = $(element).prop("attributes");
-            let n = $('<textarea/>', { html: $(element).html() });
-            $(element).replaceWith(n);
-            $.each(attributes, function() {
-                if (this.name != "onclick") {
-                    n.attr(this.name, this.value);
-                }
+            let n = $('<textarea/>', {
+                html: $(element).html().replace("https://localhost:8000/?", "nh/?")
             });
+            $.each(attributes, function() {
+                n.attr(this.name, this.value);
+            });
+            $(element).replaceWith(n);
             n.focus();
             n.val(n.val() + '\n');
             n.autogrow();
         }
 
-        $(document).ready(function() {
-            $('pre').linkify({
-                target: "_blank"
+        var makeNonEditable = function(element) {
+            if (!$(element).is("textarea") || updating) return;
+            let attributes = $(element).prop("attributes");
+            let n = $('<pre/>', {
+                html: $(element).html().replace("nh/?", "https://localhost:8000/?").trim()
             });
+            $.each(attributes, function() {
+                n.attr(this.name, this.value);
+            });
+            n.linkify({target: "_blank"});
+            $(element).replaceWith(n);
+            n.css("height", "auto");
+        }
+
+        $(document).ready(function() {
+            $('pre').linkify({target: "_blank"});
             var getGeo = function(geo) {
                 var lon = geo.coords.longitude;
                 var lat = geo.coords.latitude;
