@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, datetime, yaml, json, math, io
+import os, datetime, yaml, json, math, io, sys
 from flask import Flask, render_template, request
 from mongo import db, ObjectId, DESCENDING
 from PIL import Image
@@ -224,5 +224,7 @@ def unpack(entries):
 
 application = app
 if __name__ == "__main__":
-    application.run(host='0.0.0.0', debug=False, port=8080, ssl_context='adhoc')
-    # application.run(host='0.0.0.0', debug=True, port=7000)
+    if len(sys.argv) == 2 and sys.argv[1] == "production":
+        application.run(host='0.0.0.0', debug=False, port=8080, ssl_context='adhoc')
+    else:
+        application.run(host='0.0.0.0', debug=True, port=7000)

@@ -4,6 +4,7 @@ Simple browser-based note-taking.
 - tagging
 - full-text search
 - location aware
+- links
 - stores diffs
 - uses Flask / Mongo / nginx
 - integration with email and Notes.app
@@ -11,7 +12,7 @@ Simple browser-based note-taking.
 
 Test/develop with `./main.py`  
 
-Deploy behind nginx with `./launch.sh`
+Deploy with `./launch.sh`
 
 Backup, fetch email, and transfer from Notes with `crontab`
 
@@ -35,10 +36,8 @@ Backup, fetch email, and transfer from Notes with `crontab`
 
 ### server
 
-    /usr/local/etc/nginx/nginx.conf  
     /usr/local/etc/mongod.conf  
 
-    brew services restart nginx  
     brew services restart mongodb  
 
 
