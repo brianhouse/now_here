@@ -100,15 +100,14 @@
         }
 
         var makeEditable = function(element) {
-            let n = $('<textarea/>', {
-                    id: $(element).attr('id'),
-                    onChange: $(element).attr('onChange'),
-                    onKeyDown: $(element).attr('onKeyDown'),
-                    class: "entry_content",
-                    html: $(element).html()
-                    })
+            let attributes = $(element).prop("attributes");
+            let n = $('<textarea/>', { html: $(element).html() })
             $(element).replaceWith(n);
+            $.each(attributes, function() {
+                n.attr(this.name, this.value);
+            });
             n.focus();
+            n.val(n.val() + '\n');
             n.autogrow();
         }
 
