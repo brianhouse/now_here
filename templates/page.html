@@ -104,7 +104,6 @@
         }
 
         var makeEditable = function(element) {
-            console.log(element);
             if (!$(element).is("pre")) return;
             $(element).find('.linkified').contents().unwrap();
             let attributes = $(element).prop("attributes");
@@ -115,8 +114,13 @@
                 n.attr(this.name, this.value);
             });
             $(element).replaceWith(n);
+            // n.focus({preventScroll: true});
             n.focus();
-            n.val(n.val() + '\n');
+            if (n.val().length) {
+                n.val(n.val() + "\n");
+            } else {
+                n.val(n.val());
+            }
             n.autogrow();
         }
 
@@ -133,7 +137,7 @@
             $(element).replaceWith(n);
             $('*').on('click', function(e) {
                e.stopPropagation();
-            });            
+            });
             n.css("height", "auto");
         }
 
