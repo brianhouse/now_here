@@ -110,7 +110,7 @@
             $(element).find('.linkified').contents().unwrap();
             var attributes = $(element).prop("attributes");
             var n = $('<textarea/>', {
-                html: $(element).html().replace(/\/\/localhost:8080\//g, "nh/")
+                html: $(element).html().replace(/\/\/nowhere\//g, "nh/")
             });
             $.each(attributes, function() {
                 n.attr(this.name, this.value);
@@ -132,13 +132,14 @@
             if (!$(element).is("textarea") || updating) return;
             var attributes = $(element).prop("attributes");
             var n = $('<pre/>', {
-                html: $(element).html().replace(/nh\//g, "//localhost:8080/").trim()
+                html: $(element).html().replace(/nh\//g, "//nowhere/").trim()
             });
             $.each(attributes, function() {
                 n.attr(this.name, this.value);
             });
             n.linkify({target: "_blank"});
-            n.html(n.html().replace(/>\/\/localhost:8080\//g, ">nh/"));
+            n.html(n.html().replace(/>\/\/nowhere\//g, ">nh/"));
+            n.html(n.html().replace(/\/\/nowhere\//g, "/"));
             $(element).replaceWith(n);
             $('*').on('click', function(e) {
                 e.stopPropagation();
@@ -149,7 +150,10 @@
         $(document).ready(function() {
             $('pre').linkify({target: "_blank"});
             $('pre').html(function(i, old) {
-                return old.replace(/>\/\/localhost:8080\//g, ">nh/")
+                return old.replace(/>\/\/nowhere\//g, ">nh/");
+            });
+            $('pre').html(function(i, old) {
+                return old.replace(/\/\/nowhere\//g, "/");
             });
             $('*').on('click', function(e) {
                 e.stopPropagation();
