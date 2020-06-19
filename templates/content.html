@@ -6,15 +6,18 @@
             <div id="entry_{{ entry._id }}" class="entry">
                 <div id="metadata_{{ entry._id }}" class="metadata">
                     <input class="date" id="date_{{ entry._id }}" type="text" value="{{ entry.date }}" onKeyDown="$('#metadata_{{ entry._id }}').addClass('editing');" onChange="updateEntry('{{ entry._id }}');" />
-                    <div class="display_location" id="display_location_{{ entry._id }}" >{% if entry.location and entry.location.lonlat %}<a target="_new" href="http://maps.google.com/?q={{ entry.location.lonlat }}">{{ entry.location.place }}</a>{% endif %}{% if entry.content | length or entry.tags | length %} <a class="delete" href="/{{ entry._id }}">#</a> <a class="delete" href="javascript:deleteEntry('{{ entry._id }}');">X</a>{% endif %}</div>
+                    <div class="display_location" id="display_location_{{ entry._id }}" >{% if entry.location and entry.location.lonlat %}<a target="_new" href="http://maps.google.com/?q={{ entry.location.lonlat }}">{{ entry.location.place }}</a>{% endif %}{% if entry.content | length or entry.tags | length %} <a class="delete" href="/{{ entry._id }}">#</a> <a class="delete" href="/{{ entry._id }}/versions">0</a> <a class="delete" href="javascript:deleteEntry('{{ entry._id }}');">X</a>{% endif %}</div>
                     <input class="location" id="location_{{ entry._id }}" type="hidden" value="{{ entry.location.geohash }}" readonly="readonly" />
                     <input class="tags" id="tags_{{ entry._id }}" type="text" value="{{ entry.tags }}" placeholder="tags" onChange="updateEntry('{{ entry._id }}');" onKeyDown="$('#metadata_{{ entry._id }}').addClass('editing');" />
                 </div>
                 {% if entry.image %}
                     <a href="/static/data/images/{{ entry.folder }}/{{ entry.image }}.png" target="_new"><img src="/static/data/images/{{ entry.folder }}/{{ entry.image }}.png" /></a>
                 {% endif %}
-                <pre onClick="makeEditable(this);" class="entry_content" id="content_{{ entry._id }}" onChange="updateEntry('{{ entry._id }}');" onKeyDown="$('#metadata_{{ entry._id }}').addClass('editing');" {% if entry.content == "" %}style="height: 10px;"{% else %}onFocusOut="makeNonEditable(this);"{% endif %}>{{ entry.content | replace("nh/", "//nowhere/") }}</pre>
-                <div id="versions_{{ entry._id }}">{% for version in entry.patches %}<hr />{{ version[0] }}<br /><br /><pre class="entry_content">{{ version[1] }}</pre>{% endfor %}</div>
+                {% if entry.patches %}
+                    <div id="versions_{{ entry._id }}">{% for version in entry.patches %}{% if loop.first %}{% else %}<hr />{{ version[0] }}<br /><br />{% endif %}<pre class="entry_content">{{ version[1] }}</pre>{% endfor %}</div>
+                {% else %}
+                    <pre onClick="makeEditable(this);" class="entry_content" id="content_{{ entry._id }}" onChange="updateEntry('{{ entry._id }}');" onKeyDown="$('#metadata_{{ entry._id }}').addClass('editing');" {% if entry.content == "" %}style="height: 10px;"{% else %}onFocusOut="makeNonEditable(this);"{% endif %}>{{ entry.content | replace("nh/", "//nowhere/") }}</pre>
+                {% endif %}
             </div>
         {% endfor %}
             <div id="more"></div>

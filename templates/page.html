@@ -137,7 +137,7 @@
             $.each(attributes, function() {
                 n.attr(this.name, this.value);
             });
-            n.linkify({target: "_blank"});
+            n.linkify({target: "_self"});
             n.html(n.html().replace(/>\/\/nowhere\//g, ">nh/"));
             n.html(n.html().replace(/\/\/nowhere\//g, "/"));
             $(element).replaceWith(n);
@@ -148,7 +148,7 @@
         }
 
         $(document).ready(function() {
-            $('pre').linkify({target: "_blank"});
+            $('pre').linkify({target: "_self"});
             $('pre').html(function(i, old) {
                 return old.replace(/>\/\/nowhere\//g, ">nh/");
             });

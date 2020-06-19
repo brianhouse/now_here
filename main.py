@@ -87,9 +87,9 @@ def main():
         return render_template("content.html", entries=unpack(entries[:10]))
 
 
-@app.route("/<string:entry_id>")
-def entry(entry_id):
-    log.info("/(entry)")
+@app.route("/<string:entry_id>/versions")
+def entry_versions(entry_id):
+    log.info("/(entry)/versions")
     if 'q' in request.args or 'p' in request.args:
         return ""
     entry = None
@@ -105,6 +105,26 @@ def entry(entry_id):
     for p, patch in enumerate(patches):
         entry['patches'][p] = [patch[0], apply_reverse_patch(content, patch[1])]
         content = entry['patches'][p][1]
+    entry['patches'].insert(0, [None, entry['content']])
+    print(entry['patches'])
+    entries = [entry]
+    return render_template("page.html", entries=unpack(entries), places=hash_to_name)
+
+
+@app.route("/<string:entry_id>")
+def entry(entry_id):
+    log.info("/(entry)/versions")
+    if 'q' in request.args or 'p' in request.args:
+        return ""
+    entry = None
+    try:
+        entry = db.entries.find_one({'_id': ObjectId(entry_id)})
+    except Exception as e:
+        app.logger.warning(e)
+    if entry is None:
+        return "404 NOT FOUND", 404
+    content = entry['content']
+    del entry['patches']
     entries = [entry]
     return render_template("page.html", entries=unpack(entries), places=hash_to_name)
 
