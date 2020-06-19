@@ -106,7 +106,6 @@ def entry_versions(entry_id):
         entry['patches'][p] = [patch[0], apply_reverse_patch(content, patch[1])]
         content = entry['patches'][p][1]
     entry['patches'].insert(0, [None, entry['content']])
-    print(entry['patches'])
     entries = [entry]
     return render_template("page.html", entries=unpack(entries), places=hash_to_name)
 
