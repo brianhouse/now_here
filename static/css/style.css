@@ -57,6 +57,10 @@ pre {
         width: 400px;
     }
 
+    #searchbar a {
+        text-decoration: none;
+    }
+
 #tagcloud {
     padding: 0px;
     text-align: justify;
