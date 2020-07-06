@@ -106,7 +106,7 @@
             return tags;
         }
 
-        var makeEditable = function(element) {
+        var makeEditable = function(element, focus=true) {
             if (!$(element).is("pre")) return;
             $(element).find('.linkified').contents().unwrap();
             var attributes = $(element).prop("attributes");
@@ -119,14 +119,18 @@
             var position = $(window).scrollTop(); // has to come before replace
             $(element).replaceWith(n);
             // n.focus({preventScroll: true}); // doesn't work in Safari
-            n.focus();
-            if (n.val().length) {
-                n.val(n.val() + "\n");
+            if (focus) {
+                n.focus();
+                if (n.val().length) {
+                    n.val(n.val() + "\n");
+                } else {
+                    n.val(n.val());
+                }
+                n.autogrow();
+                window.scrollTo(0, position);
             } else {
-                n.val(n.val());
+                n.autogrow();
             }
-            n.autogrow();
-            window.scrollTo(0, position);
         }
 
         var makeNonEditable = function(element) {
