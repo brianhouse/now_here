@@ -41,14 +41,17 @@ def main():
     # search
     else:
         log.info("SEARCH q=[%s] page=%s" % (q, page))
-        tokens = q.split(',')
-        tags = [tag for tag in tokens if len(tag) and tag[0] not in '-"' and len(tag)]
+        tokens = [token.replace(' ', '+') for token in q.split(',')]
+        tags = [tag for tag in tokens if len(tag) and tag[0] not in '+-"' and len(tag)]
+        req_tags = [tag[1:] for tag in tokens if len(tag) and tag[0] == '+' and len(tag)]
         anti_tags = [tag[1:] for tag in tokens if len(tag) and tag[0] == '-' and len(tag)]
         full_text = [tag.strip('"') for tag in tokens if len(tag) and tag[0] == '"' and len(tag) > 2]
         full_text = full_text[0] if len(full_text) else None
         match = []
         if len(tags):
-            match.append({'tags': {'$all': tags}})
+            match.append({'tags': {'$in': tags}})
+        if len(req_tags):
+            match.append({'tags': {'$all': req_tags}})
         if len(anti_tags):
             match.append({'tags': {'$nin': anti_tags}})
         if full_text:
@@ -58,7 +61,7 @@ def main():
         query = {'$and': match}
         log.info(query)
         entries = list(db.entries.find(query, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True, 'image': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
-        search_string = " ".join(tags) + (" -" + " -".join(anti_tags) if len(anti_tags) else "") + (' "' + full_text + '"' if full_text else "")
+        search_string = (" +" + " +".join(req_tags) if len(req_tags) else "") + (" -" + " -".join(anti_tags) if len(anti_tags) else "") + (' "' + full_text + '"' if full_text else "") + (" " + " ".join(tags) if len(tags) else "")
 
     log.info("Found %d results" % len(entries))
 
