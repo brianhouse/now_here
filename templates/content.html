@@ -16,7 +16,7 @@
                 {% if entry.patches %}
                     <div id="versions_{{ entry._id }}">{% for version in entry.patches %}{% if loop.first %}{% else %}<hr />{{ version[0] }}<br /><br />{% endif %}<pre class="entry_content">{{ version[1] }}</pre>{% endfor %}</div>
                 {% else %}
-                    <pre onClick="makeEditable(this);" class="entry_content" id="content_{{ entry._id }}" onChange="updateEntry('{{ entry._id }}');" onKeyDown="$('#metadata_{{ entry._id }}').addClass('editing');" {% if entry.content == "" %}style="height: 10px;"{% else %}onFocusOut="makeNonEditable(this);"{% endif %}>{{ entry.content | replace("nh/", "//nowhere/") }}</pre>
+                    <pre onClick="makeEditable(this);" class="entry_content" id="content_{{ entry._id }}" onBlur="updateEntry('{{ entry._id }}');" onKeyDown="$('#metadata_{{ entry._id }}').addClass('editing');" {% if entry.content == "" %}style="height: 10px;"{% else %}onFocusOut="makeNonEditable(this);"{% endif %}>{{ entry.content | replace("nh/", "//nowhere/") }}</pre>
                 {% endif %}
             </div>
         {% endfor %}
