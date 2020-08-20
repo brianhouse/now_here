@@ -181,7 +181,7 @@
         });
 
         $(window).scroll(function() {
-            if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+            if ($(window).scrollTop() == $(document).height() - $(window).height() && window.location.pathname == "/") {
                 page += 1;
                 $.ajax({
                     type: 'GET',
