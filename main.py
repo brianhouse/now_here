@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/local/bin/python3
 
 import os, datetime, yaml, json, math, io, sys
 from flask import Flask, render_template, request

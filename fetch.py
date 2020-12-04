@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/local/bin/python3
 
 import io, imaplib, email, mimetypes, requests
 from util import *
