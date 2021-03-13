@@ -140,7 +140,10 @@ def update():
     log.info(data)
     try:
         entry_id = data['entry_id']
-        content = str(data['content']).strip()
+        if 'content' in data:
+            content = str(data['content']).strip()
+        else:
+            content = ""
         t = parse_datestring(data['date']) if 'date' in data else get_t()
         tags = list(set(tag.lower().replace('.', '_') for tag in data['tags'].split(','))) if 'tags' in data else []
         if 'new' in tags and 'note' in tags:
