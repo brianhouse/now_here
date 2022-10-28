@@ -63,7 +63,7 @@ def main():
             continue
         entry = {}
         entry['entry_id'] = "new"
-        entry['tags'] = ','.join(message['subject'].split(' '))
+        entry['tags'] = ','.join(message['subject'].split(' ') + ["_email"])
         entry['content'] = message['body']
         entry['date'] = message['date']
         entry['location'] = None
