@@ -22,17 +22,17 @@ Backup, fetch email, and transfer from Notes with `crontab`
 
     brew install mongodb  
     brew install uwsgi  
-    sudo pip3 install flask  
-    sudo pip3 install uwsgi  
-    sudo pip3 install pymongo  
-    sudo pip3 install diff-match-patch  
-    sudo pip3 install requests  
-    sudo pip3 install pillow  
-    sudo pip3 install PyYAML  
-    sudo pip3 install python-geohash  
-    sudo pip3 install dateutil  
-    sudo pip3 install pytz  
-    sudo pip3 install boto3
+    sudo pip install flask  
+    sudo pip install uwsgi  
+    sudo pip install pymongo  
+    sudo pip install diff-match-patch  
+    sudo pip install requests  
+    sudo pip install pillow  
+    sudo pip install PyYAML  
+    sudo pip install python-geohash  
+    sudo pip install python-dateutil  
+    sudo pip install pytz  
+    sudo pip install boto3
 
 ### server
 

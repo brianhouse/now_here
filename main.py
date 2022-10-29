@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!venv/bin/python
 
 import os, datetime, yaml, json, math, io, sys
 from flask import Flask, render_template, request
@@ -155,7 +155,8 @@ def update():
         image = data['image'] if 'image' in data else None
         image_data = None
         if 'image_data' in request.files:
-            image_data = Image.open(request.files['image_data'].stream)
+            stream = request.files['image_data'].stream
+            image_data = Image.open(stream)
     except Exception as e:
         log.error(log.exc(e))
         return "Parsing failed", 400
@@ -247,9 +248,8 @@ def unpack(entries):
     return entries
 
 
-application = app
 if __name__ == "__main__":
     if len(sys.argv) == 2 and sys.argv[1] == "production":
-        application.run(host='0.0.0.0', debug=False, port=8080, ssl_context='adhoc')
+        app.run(host='0.0.0.0', debug=False, port=8080, ssl_context='adhoc')
     else:
-        application.run(host='0.0.0.0', debug=True, port=7000)
+        app.run(host='0.0.0.0', debug=True, port=8022)

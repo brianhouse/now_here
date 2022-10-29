@@ -1,10 +1,8 @@
 .DS_Store
 __pycache__
-nginx_openpaths.conf.smp
 logs
 config.yaml
-migration
 static/data
 backup.tar.gz
-*.crt
-*.key
+now_here.app
+venv

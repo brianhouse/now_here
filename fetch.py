@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!venv/bin/python
 
 import io, imaplib, email, mimetypes, requests
 from util import *
