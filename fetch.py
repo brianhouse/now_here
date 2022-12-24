@@ -8,7 +8,6 @@ def fetch_email(delete=False):
     server.login(config['imap']['username'], config['imap']['password'])
     server.select('INBOX')
     response, items = server.search(None, "(UNSEEN)")
-    messages = []
     for mail in items[0].split():
         try:
             resp, data = server.fetch(mail, '(RFC822)')
@@ -39,50 +38,47 @@ def fetch_email(delete=False):
                             message['html'] = part.get_payload(decode=True).strip()
             if type(message['body']) == bytes:
                 message['body'] = message['body'].decode('utf-8')
-            messages.append(message)
-            server.store(mail, '+FLAGS', ('\\Deleted' if delete else '\\Seen'))
+            if process_message(message):
+                server.store(mail, '+FLAGS', ('\\Deleted' if delete else '\\Seen'))
+            else:
+                server.store(mail, '-FLAGS', ('\\Seen',))
         except Exception as e:
             log.error(log.exc(e))
-    return messages
 
-def main():
+
+def process_message(message):
+    safe = False
+    for address in config['addresses']:
+        if address in message['from']:
+            safe = True
+            break
+    if not safe:
+        log.info("Bad address: %s" % message['from'])
+        return False
+    entry = {}
+    entry['entry_id'] = "new"
+    entry['tags'] = ','.join(message['subject'].split(' ') + ["_email"])
+    entry['content'] = message['body']
+    entry['date'] = message['date']
+    entry['location'] = None
+    log.info(entry)
+    files = None
     try:
-        messages = fetch_email()
+        files = {'image_data': io.BytesIO(message['attachments'][0]['data'])}
+    except (KeyError, IndexError):
+        pass
     except Exception as e:
-        log.warning("Could not fetch mail: %s" % e)
-        return
-    log.info("Found %d messages" % len(messages))
-    for message in messages:
-        safe = False
-        for address in config['addresses']:
-            if address in message['from']:
-                safe = True
-                break
-        if not safe:
-            log.info("Bad address: %s" % message['from'])
-            continue
-        entry = {}
-        entry['entry_id'] = "new"
-        entry['tags'] = ','.join(message['subject'].split(' ') + ["_email"])
-        entry['content'] = message['body']
-        entry['date'] = message['date']
-        entry['location'] = None
-        log.info(entry)
-        files = None
-        try:
-            files = {'image_data': io.BytesIO(message['attachments'][0]['data'])}
-        except (KeyError, IndexError):
-            pass
-        except Exception as e:
-            log.error(log.exc(e))
-        try:
-            r = requests.post("https://localhost:%s/update" % config['port'], data=entry, files=files, verify=False)
-        except Exception as e:
-            success = False
-            log.error(log.exc(e))
-        else:
-            log.info("--> %s: %s" % (r.status_code, r.text))
+        log.error(log.exc(e))
+        return False
+    try:
+        r = requests.post("https://localhost:%s/update" % config['port'], data=entry, files=files, verify=False)
+    except Exception as e:
+        log.error(log.exc(e))
+        return False
+    else:
+        log.info("--> %s: %s" % (r.status_code, r.text))
+        return True if r.status_code == 200 else False
 
 
 if __name__ == "__main__":
-    main()
+    fetch_email()

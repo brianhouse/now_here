@@ -4,6 +4,7 @@ import os, datetime, yaml, json, math, io, sys
 from flask import Flask, render_template, request
 from mongo import db, ObjectId, DESCENDING
 from PIL import Image
+from pillow_heif import register_heif_opener
 app = Flask(__name__)
 from util import *
 app.logger = log
@@ -156,6 +157,7 @@ def update():
         image_data = None
         if 'image_data' in request.files:
             stream = request.files['image_data'].stream
+            register_heif_opener()
             image_data = Image.open(stream)
     except Exception as e:
         log.error(log.exc(e))
