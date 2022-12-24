@@ -1,4 +1,4 @@
-#!venv/bin/python
+#!/Users/house/Studio/now_here/venv/bin/python
 
 import io, imaplib, email, mimetypes, requests
 from util import *

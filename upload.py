@@ -1,4 +1,4 @@
-#!venv/bin/python
+#!/Users/house/Studio/now_here/venv/bin/python
 
 import boto3
 
