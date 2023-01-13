@@ -4,5 +4,5 @@
 @reboot /Users/house/Studio/now_here/fetch.py
 
 29 */4 * * * /Users/house/Studio/now_here/backup.sh
-29 */4 * * * /Users/house/Studio/now_here/notes.sh > /dev/null
+31 */4 * * * /Users/house/Studio/now_here/notes.sh > /dev/null
 25 */4 * * * /Users/house/Studio/now_here/fetch.py
