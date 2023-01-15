@@ -64,9 +64,16 @@ def process_message(message):
     log.info(entry)
     files = None
     try:
-        files = {'image_data': io.BytesIO(message['attachments'][0]['data'])}
+        for item in message['attachments']:
+            if '.txt' in item['filename']:
+                txt = item['data'].decode('utf-8')
+                txt = txt.replace("Created with https://highlighted.app\r\n", "")                
+                txt = txt.replace("Highlights may be protected by copyright.\r\n\r\n\r\n", "")
+                entry['content'] = txt if not entry['content'] else entry['content'] + "\n\n" + txt
+            else:
+                files = {'image_data': io.BytesIO(message['attachments'][0]['data'])}
     except (KeyError, IndexError):
-        pass
+        log.warning(log.exc(e))
     except Exception as e:
         log.error(log.exc(e))
         return False
