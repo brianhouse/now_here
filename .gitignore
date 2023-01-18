@@ -3,6 +3,6 @@ __pycache__
 logs
 config.yaml
 static/data
-backup.tar.gz
+nh.tar.gz
 now_here.app
 venv

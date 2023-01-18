@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!venv/bin/python
 
 from util import config
 from pymongo import MongoClient, ASCENDING, DESCENDING

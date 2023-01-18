@@ -1,2 +1,2 @@
-FILE=/Users/house/Studio/now_here/backup.tar.gz
+FILE=/Users/house/Studio/now_here/nh
 mongorestore --db nh $FILE
