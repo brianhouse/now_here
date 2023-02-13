@@ -26,7 +26,13 @@ Backup, fetch email, and transfer from Notes with `crontab`
 
     brew services restart mongodb/brew/mongodb-community
 
+### keys
+
+    https://letsencrypt.org/docs/certificates-for-localhost/
+
+let keychain know to always trust
 
 ### ref
 
     https://gist.github.com/mplewis/6076082
+

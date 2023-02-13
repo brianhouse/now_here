@@ -252,6 +252,6 @@ def unpack(entries):
 
 if __name__ == "__main__":
     if len(sys.argv) == 2 and sys.argv[1] == "production":
-        app.run(host='0.0.0.0', debug=False, port=8080, ssl_context='adhoc')
+        app.run(host='0.0.0.0', debug=False, port=8080, ssl_context=("keys/localhost.crt", "keys/localhost.key"))
     else:
         app.run(host='0.0.0.0', debug=True, port=8022)
