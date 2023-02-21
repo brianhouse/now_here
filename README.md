@@ -36,3 +36,10 @@ let keychain know to always trust
 
     https://gist.github.com/mplewis/6076082
 
+### todos
+
+- search phrases
+- search dates
+- explicit edit button
+- "now" link
+
