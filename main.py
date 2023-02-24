@@ -1,4 +1,4 @@
-#!venv/bin/python
+#!/Users/house/Studio/now_here/venv/bin/python
 
 import os, datetime, yaml, json, math, io, sys
 from flask import Flask, render_template, request
@@ -252,6 +252,6 @@ def unpack(entries):
 
 if __name__ == "__main__":
     if len(sys.argv) == 2 and sys.argv[1] == "production":
-        app.run(host='0.0.0.0', debug=False, port=8080, ssl_context=("keys/localhost.crt", "keys/localhost.key"))
+        app.run(host='0.0.0.0', debug=False, port=8080, ssl_context=("/Users/house/Studio/now_here/keys/localhost.crt", "/Users/house/Studio/now_here/keys/localhost.key"))
     else:
         app.run(host='0.0.0.0', debug=True, port=8022)
