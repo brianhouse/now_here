@@ -1,6 +1,7 @@
 #!/Users/house/Studio/now_here/venv/bin/python
 
-import io, imaplib, email, mimetypes, requests
+import sys, os, io, imaplib, email, mimetypes, requests
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from util import *
 
 def fetch_email(delete=False):

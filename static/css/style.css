@@ -54,7 +54,9 @@ pre {
 }
 
     #searchbar input {
-        width: 400px;
+        width: 445px;
+        padding-left: 5px;
+        background-color: #eee;
     }
 
     #searchbar a {

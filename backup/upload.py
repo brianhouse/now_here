@@ -9,7 +9,7 @@ s3 = boto3.resource('s3')
 d = datetime.datetime.now().strftime("%d")
 
 
-data = open("/Users/house/Studio/now_here/nh.tar.gz", 'rb')
+data = open("/Users/house/Studio/now_here/backup/nh.tar.gz", 'rb')
 try:
     s3.Bucket('brian-house-archive').put_object(Key=f"nh/nh_{d}.tar.gz", Body=data)
 except Exception as e:

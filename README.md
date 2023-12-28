@@ -32,14 +32,16 @@ Backup, fetch email, and transfer from Notes with `crontab`
 
 let keychain know to always trust
 
-### ref
+### nginx ref
 
     https://gist.github.com/mplewis/6076082
 
 ### todos
 
+- menu bar changes when editing
+
 - search phrases
 - search dates
-- explicit edit button
-- "now" link
+
+- Notes images import
 
