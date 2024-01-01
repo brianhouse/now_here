@@ -76,7 +76,7 @@ def process_message(message):
             elif ext in ['jpg', 'jpeg', 'png', 'gif', 'tif', 'tiff', 'heic', 'heif', 'bmp', 'eps', 'webp']:
                 files = {'image_data': io.BytesIO(message['attachments'][0]['data'])}
             elif ext == 'pdf':
-                pass
+                files = {'pdf_data': io.BytesIO(message['attachments'][0]['data'])}
     except (KeyError, IndexError):
         log.warning(log.exc(e))
     except Exception as e:

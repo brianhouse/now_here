@@ -26,7 +26,7 @@ def depunctuate(s, exclude=None, replacement=''):
     return regex.sub(replacement, s)
 
 def parse_datestring(string):
-    """We are purposefully ignoring timezone and storing as if everything was UTC"""
+    """We are purposefully ignoring timezone and just doing everything naive"""
     try:
         dt = parser.parse(string)
         t = calendar.timegm(dt.timetuple())

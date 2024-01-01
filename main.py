@@ -162,7 +162,7 @@ def update():
         if 'pdf_data' in request.files:
             stream = request.files['pdf_data'].stream
             pdf_data = PyPDF2.PdfReader(stream)
-
+            
     except Exception as e:
         log.error(log.exc(e))
         return "Parsing failed", 400
@@ -177,7 +177,7 @@ def update():
                     try:
                         t = parse_datestring(value)
                     except:
-                        pass
+                        log.warning("Could not parse date")
                 elif facet == 'place':
                     location = name_to_hash[value] if value in name_to_hash else value
             tags[i] = None
