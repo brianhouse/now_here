@@ -1,6 +1,6 @@
 #!/Users/house/Studio/now_here/venv/bin/python
 
-import os, datetime, yaml, json, math, io, sys
+import os, datetime, yaml, json, math, io, sys, PyPDF2
 from flask import Flask, render_template, request
 from mongo import db, ObjectId, DESCENDING
 from PIL import Image
@@ -36,7 +36,7 @@ def main():
     # recent entries
     if not len(q):
         log.info("RECENT page=%s" % (page,))
-        entries = list(db.entries.find(None, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True, 'image': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
+        entries = list(db.entries.find(None, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True, 'image': True, 'pdf': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
         search_string = ""
 
     # search
@@ -61,7 +61,7 @@ def main():
             pass
         query = {'$and': match}
         log.info(query)
-        entries = list(db.entries.find(query, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True, 'image': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
+        entries = list(db.entries.find(query, {'_id': True, 'tags': True, 'content': True, 'location': True, 't': True, 'image': True, 'pdf': True}).sort([('t', DESCENDING)]).skip(page * 10).limit(100))
         search_string = (" +" + " +".join(req_tags) if len(req_tags) else "") + (" -" + " -".join(anti_tags) if len(anti_tags) else "") + (' "' + full_text + '"' if full_text else "") + (" " + " ".join(tags) if len(tags) else "")
 
     log.info("Found %d results" % len(entries))
@@ -138,7 +138,6 @@ def update():
     # parse data
     log.info("/update")
     data = {key: value for (key, value) in dict(request.form).items()}
-    log.info(data)
     try:
         entry_id = data['entry_id']
         if 'content' in data:
@@ -153,12 +152,17 @@ def update():
         if location is not None and not len(location.strip()):
             location = None
         location = name_to_hash[location] if location in name_to_hash else location
-        image = data['image'] if 'image' in data else None
+        image = None
         image_data = None
+        pdf_data = None
         if 'image_data' in request.files:
             stream = request.files['image_data'].stream
             register_heif_opener()
             image_data = Image.open(stream)
+        if 'pdf_data' in request.files:
+            stream = request.files['pdf_data'].stream
+            pdf_data = PyPDF2.PdfReader(stream)
+
     except Exception as e:
         log.error(log.exc(e))
         return "Parsing failed", 400
@@ -191,12 +195,20 @@ def update():
             log.error(log.exc(e))
             return "Insert failed", 400
         if image_data:
-            if not image:
-                image = entry_id
+            image = entry_id
             image_path = os.path.join(os.path.dirname(__file__), "static", "data", "images", str(image)[-1], "%s.png" % str(image))
             log.info("image_path: %s" % image_path)
             image_data.save(image_path)
             db.entries.update_one({'_id': ObjectId(entry_id)}, {'$set': {'image': image}})
+        if pdf_data:
+            image = entry_id
+            image_path = os.path.join(os.path.dirname(__file__), "static", "data", "images", str(image)[-1], "%s.pdf" % str(image))
+            log.info("image_path (pdf): %s" % image_path)            
+            pdf_writer = PyPDF2.PdfWriter()
+            pdf_writer.append_pages_from_reader(pdf_data)
+            with open(image_path, 'wb') as f:
+                pdf_writer.write(f)
+            db.entries.update_one({'_id': ObjectId(entry_id)}, {'$set': {'image': image, 'pdf': True}})
 
     # update
     else:

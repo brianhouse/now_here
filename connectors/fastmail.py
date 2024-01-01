@@ -66,13 +66,17 @@ def process_message(message):
     files = None
     try:
         for item in message['attachments']:
-            if '.txt' in item['filename']:
+            ext = item['filename'].split('.')[-1].lower()
+            if ext == 'txt':
+                entry['tags'].append("_highlighted")
                 txt = item['data'].decode('utf-8')
                 txt = txt.replace("Created with https://highlighted.app\r\n", "")                
                 txt = txt.replace("Highlights may be protected by copyright.\r\n\r\n\r\n", "")
                 entry['content'] = txt if not entry['content'] else entry['content'] + "\n\n" + txt
-            else:
+            elif ext in ['jpg', 'jpeg', 'png', 'gif', 'tif', 'tiff', 'heic', 'heif', 'bmp', 'eps', 'webp']:
                 files = {'image_data': io.BytesIO(message['attachments'][0]['data'])}
+            elif ext == 'pdf':
+                pass
     except (KeyError, IndexError):
         log.warning(log.exc(e))
     except Exception as e:
