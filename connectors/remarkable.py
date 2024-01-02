@@ -6,7 +6,7 @@ from util import *
 
 # have to have it set up so "ssh remarkable" logs in with keys and no password
 
-NOTEBOOK = "28aa63fb-517e-4695-8d69-9da712368d31"
+NOTEBOOK = config['notebook']
 DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 
 log.info("Connecting...")
@@ -18,25 +18,26 @@ try:
         raise Exception("connection failed")
     log.info("--> connected")
     with open(os.path.join(DIR, filename)) as f:
-        data = json.loads(f.read())
+        content = json.loads(f.read())
     os.remove(os.path.join(DIR, filename))
 except Exception as e:
     log.error(log.exc(e))
     exit()
 log.info("--> loaded notebook")
+print(json.dumps(content, indent=4))
 
 log.info("Getting entry tags and dates...")
 try:
 
     # get valid page ids
     entries = []
-    for page in data['cPages']['pages']:
+    for page in content['cPages']['pages']:
         if 'deleted' in page:
             continue
         entries.append({'id': page['id'], 'date': None, 'tags': [], 'children': []})
 
     # distribute tags
-    for tag in data['pageTags']:
+    for tag in content['pageTags']:
         for entry in entries:
             if tag['pageId'] == entry['id']:
                 entry['tags'].append(tag['name'])
@@ -49,21 +50,26 @@ try:
         if "cont" in entries[i]['tags']:
             entries[i-1]['children'].append(entries[i]['id'])
             del entries[i]
-        i += 1
+        else:
+            i += 1
         if i == len(entries):
             break
 
     # pull .rm files to get creation times
-    for entry in entries:
-        try:
-            if subprocess.run(["scp", "-p", f"root@remarkable:/home/root/.local/share/remarkable/xochitl/{NOTEBOOK}/{entry['id']}.rm", DIR]).returncode:
-                raise Exception("connection failed")
+    i = 0
+    while True:
+        entry = entries[i]
+        if not subprocess.run(["scp", "-p", f"root@remarkable:/home/root/.local/share/remarkable/xochitl/{NOTEBOOK}/{entry['id']}.rm", DIR]).returncode:
             path = f"{DIR}/{entry['id']}.rm"
             entry['date'] = datetime.datetime.fromtimestamp(os.stat(path).st_birthtime).isoformat()            
             os.remove(path)
-        except Exception as e:
-            log.error(log.exc(e))
-            exit()
+            i += 1
+        else:
+            # blank page (hopefully not a connection error)
+            del entries[i]
+        if i == len(entries):
+            break
+        
 
 except Exception as e:
     log.error("Parsing error:" + log.exc(e))
@@ -102,13 +108,13 @@ with open(f"{DIR}/data.pdf", 'rb') as f:
         data['location'] = None
         print(data)
 
-        files = {'pdf_data': pdf_data}
-        try:
-            r = requests.post("http://localhost:%s/update" % config['port'], data=data, files=files, verify=False)
-        except Exception as e:
-            log.error(log.exc(e))
-        else:
-            log.info("--> %s: %s" % (r.status_code, r.text))
+        # files = {'pdf_data': pdf_data}
+        # try:
+        #     r = requests.post("http://localhost:%s/update" % config['port'], data=data, files=files, verify=False)
+        # except Exception as e:
+        #     log.error(log.exc(e))
+        # else:
+        #     log.info("--> %s: %s" % (r.status_code, r.text))
 
 os.remove(f"{DIR}/data.pdf")
 
