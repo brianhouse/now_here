@@ -25,40 +25,52 @@ except Exception as e:
     exit()
 log.info("--> loaded notebook")
 
-log.info("Getting tags and dates...")
-tags = {}
-for page in data['cPages']['pages']:
-    if 'deleted' in page:
-        continue
-    if page['id'] not in tags:
-        tags[page['id']] = []
-ids = list(tags.keys())  
-dates = {}      
-for i, id in enumerate(ids):
-    for tag in data['pageTags']:
-        if tag['pageId'] == id:
-            if tag['name'] == "cont":
-                tags[id] = tags[ids[i-1]]
-            else:
-                tags[id].append(tag['name'])
-    try:
-        if subprocess.run(["scp", "-p", f"root@remarkable:/home/root/.local/share/remarkable/xochitl/{NOTEBOOK}/{id}.rm", DIR]).returncode:
-            raise Exception("connection failed")
-        path = f"{DIR}/{id}.rm"
-        creation_time = os.stat(path).st_birthtime
-        creation_time_dt = datetime.datetime.fromtimestamp(creation_time)
-        creation_time_s = creation_time_dt.isoformat()
-        if id not in dates:
-            dates[id] = []
-        dates[id].append(creation_time_s)
-        os.remove(path)
-    except Exception as e:
-        log.error(log.exc(e))
-        exit()
-log.info("--> done")
+log.info("Getting entry tags and dates...")
+try:
 
-# print(json.dumps(tags, indent=4))
-# print(json.dumps(dates, indent=4))
+    # get valid page ids
+    entries = []
+    for page in data['cPages']['pages']:
+        if 'deleted' in page:
+            continue
+        entries.append({'id': page['id'], 'date': None, 'tags': [], 'children': []})
+
+    # distribute tags
+    for tag in data['pageTags']:
+        for entry in entries:
+            if tag['pageId'] == entry['id']:
+                entry['tags'].append(tag['name'])
+
+    # combine mutipage
+    # (there is a race condition if run exactly two weeks between cont page creation
+    # -- so make it 3am two weeks before or something)
+    i = 0
+    while True:
+        if "cont" in entries[i]['tags']:
+            entries[i-1]['children'].append(entries[i]['id'])
+            del entries[i]
+        i += 1
+        if i == len(entries):
+            break
+
+    # pull .rm files to get creation times
+    for entry in entries:
+        try:
+            if subprocess.run(["scp", "-p", f"root@remarkable:/home/root/.local/share/remarkable/xochitl/{NOTEBOOK}/{entry['id']}.rm", DIR]).returncode:
+                raise Exception("connection failed")
+            path = f"{DIR}/{entry['id']}.rm"
+            entry['date'] = datetime.datetime.fromtimestamp(os.stat(path).st_birthtime).isoformat()            
+            os.remove(path)
+        except Exception as e:
+            log.error(log.exc(e))
+            exit()
+
+except Exception as e:
+    log.error("Parsing error:" + log.exc(e))
+    exit()        
+log.info("--> done")
+# print(json.dumps(entries, indent=4))
+
 
 log.info("Getting pdf content via HTTP...")
 try:
@@ -71,25 +83,28 @@ log.info("--> success")
 
 with open(f"{DIR}/data.pdf", 'rb') as f:
     pdf_reader = PyPDF2.PdfReader(f)
-    for n in range(len(pdf_reader.pages)):
+    p = 0
+    for entry in entries:
         pdf_writer = PyPDF2.PdfWriter()
-        pdf_writer.add_page(pdf_reader.pages[n])
+        for i in range(len(entry['children']) + 1):
+            pdf_writer.add_page(pdf_reader.pages[p])
+            p += 1
 
         pdf_data = io.BytesIO()
         pdf_writer.write(pdf_data)
         pdf_data.seek(0)
 
-        entry = {}
-        entry['entry_id'] = "new"
-        entry['tags'] = ','.join(tags[ids[n]] + ["_remarkable"])
-        entry['content'] = ""
-        entry['date'] = dates[ids[n]]
-        entry['location'] = None
-        print(entry)
+        data = {}
+        data['entry_id'] = "new"
+        data['tags'] = ','.join(entry['tags'] + ["_remarkable"])
+        data['content'] = ""
+        data['date'] = entry['date']
+        data['location'] = None
+        print(data)
 
         files = {'pdf_data': pdf_data}
         try:
-            r = requests.post("http://localhost:%s/update" % config['port'], data=entry, files=files, verify=False)
+            r = requests.post("http://localhost:%s/update" % config['port'], data=data, files=files, verify=False)
         except Exception as e:
             log.error(log.exc(e))
         else:
@@ -101,7 +116,7 @@ os.remove(f"{DIR}/data.pdf")
 
 ## check that emailing annotated pdfs works
 
-# change tail back to false, and switch the port back
+# change tail back to false, and switch the port back; relaunch
 
-
+# test that mail is stripping my sig
 # it would actually be better to have the 'conts' combined

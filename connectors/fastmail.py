@@ -59,7 +59,7 @@ def process_message(message):
     entry = {}
     entry['entry_id'] = "new"
     entry['tags'] = ','.join(message['subject'].split(' ') + ["_email"])
-    entry['content'] = message['body']
+    entry['content'] = message['body'].replace("--\nhttps://brianhouse.net", "")
     entry['date'] = message['date']
     entry['location'] = None
     log.info(entry)
