@@ -1,4 +1,5 @@
-import os, calendar, string, re, geohash, datetime, diff_match_patch, yaml, shutil
+import os, calendar, string, re, geohash, datetime, diff_match_patch, yaml, shutil, io
+from html.parser import HTMLParser
 from dateutil import parser
 from .log_config import log, config
 
@@ -51,3 +52,20 @@ def linkify(string):
     for link in links:
         string = string.replace(link[0], f'<a href="{link[0]}">{link[0]}</a>')
     return string
+
+class MLStripper(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.reset()
+        self.strict = False
+        self.convert_charrefs= True
+        self.text = io.StringIO()
+    def handle_data(self, d):
+        self.text.write(d)
+    def get_data(self):
+        return self.text.getvalue()
+
+def strip_tags(html):
+    s = MLStripper()
+    s.feed(html)
+    return s.get_data()

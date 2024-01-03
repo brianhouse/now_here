@@ -19,6 +19,7 @@ def fetch_email(delete=False):
                         'subject': data['subject'],
                         'date': data['date'],
                         'body': None,
+                        'html': None,
                         'attachments': []
                         }
             for part in data.walk():
@@ -39,6 +40,8 @@ def fetch_email(delete=False):
                             message['html'] = part.get_payload(decode=True).strip()
             if type(message['body']) == bytes:
                 message['body'] = message['body'].decode('utf-8')
+            if type(message['html']) == bytes:
+                message['html'] = message['html'].decode('utf-8')                
             if process_message(message):
                 server.store(mail, '+FLAGS', ('\\Deleted' if delete else '\\Seen'))
             else:
@@ -54,29 +57,47 @@ def process_message(message):
             safe = True
             break
     if not safe:
-        log.info("Bad address: %s" % message['from'])
+        log.info("Skipping address: %s" % message['from'])
         return False
-    entry = {}
-    entry['entry_id'] = "new"
-    entry['tags'] = ','.join(message['subject'].split(' ') + ["_email"])
-    entry['content'] = message['body'].replace("--\nhttps://brianhouse.net", "")
-    entry['date'] = message['date']
-    entry['location'] = None
-    log.info(entry)
-    files = None
     try:
+        entry = {}
+        entry['entry_id'] = "new"
+        entry['tags'] = ','.join(message['subject'].split(' ') + ["_email"])
+        entry['content'] = message['body'] if message['body'] is not None else (strip_tags(message['html']) if message['html'] is not None else "")        
+        entry['content'] = entry['content'].replace("--\r\nhttps://brianhouse.net <https://brianhouse.net/>", "")
+        entry['content'] = entry['content'].replace("--\r\nhttps://brianhouse.net", "")
+        entry['content'] = entry['content'].replace("--https://brianhouse.net", "")        
+        entry['content'] = entry['content'].strip()
+        entry['date'] = message['date']
+        entry['location'] = None
+
+        # if this is from reMarkable, need to refactor and use content for tags
+        log.info("Sent from reMarkable")
+        if 'reMarkable' in ''.join(entry['tags']):
+            entry['tags'] = ','.join(entry['content'].strip().split("--")[0].split(' ') + ["_remarkable", "_email"])
+            entry['content'] = ""
+        log.info(entry)
+
+        files = None
         for item in message['attachments']:
             ext = item['filename'].split('.')[-1].lower()
             if ext == 'txt':
+
+                # handle attached .txt files from the highlighted app; should also work otherwise
                 entry['tags'].append("_highlighted")
                 txt = item['data'].decode('utf-8')
                 txt = txt.replace("Created with https://highlighted.app\r\n", "")                
                 txt = txt.replace("Highlights may be protected by copyright.\r\n\r\n\r\n", "")
-                entry['content'] = txt if not entry['content'] else entry['content'] + "\n\n" + txt
+                entry['content'] = txt if not len(entry['content']) else entry['content'] + "\n\n" + txt
+
             elif ext in ['jpg', 'jpeg', 'png', 'gif', 'tif', 'tiff', 'heic', 'heif', 'bmp', 'eps', 'webp']:
                 files = {'image_data': io.BytesIO(message['attachments'][0]['data'])}
+                log.info("--> attached image")
+
             elif ext == 'pdf':
                 files = {'pdf_data': io.BytesIO(message['attachments'][0]['data'])}
+                log.info("--> attached pdf")
+
     except (KeyError, IndexError):
         log.warning(log.exc(e))
     except Exception as e:
