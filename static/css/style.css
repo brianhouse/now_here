@@ -75,7 +75,7 @@ pre {
     }
 
         #tagcloud a.tag_0 {
-            color: #ccc;
+            color: #666;
         }
 
         #tagcloud a.tag_1 {
@@ -83,15 +83,15 @@ pre {
         }
 
         #tagcloud a.tag_2 {
-            color: #666;
+            color: #bbb;
         }
 
         #tagcloud a.tag_3 {
-            color: #333;
+            color: #ddd;
         }
 
         #tagcloud a.tag_4 {
-            color: #000;
+            color: #fff;
         }
 
 .entry {
@@ -162,7 +162,7 @@ pre {
 
 
         .entry .metadata .tags {
-            width: 380px;
+            width: 350px;
             background-color: inherit;
         }
 

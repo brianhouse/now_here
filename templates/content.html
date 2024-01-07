@@ -15,12 +15,19 @@
                         {% endif %}
                     </div>
                     <div class="tools" >
-                        {% if entry.content | length or entry.tags | length %}
-                            <a class="delete" href="javascript:deleteEntry('{{ entry._id }}');">x</a>&nbsp;<a id="edit_btn_{{ entry._id }}" class="delete" href="javascript:makeEditable('#content_{{ entry._id }}', false);$('#edit_btn_{{ entry._id }}').hide();$('#save_btn_{{ entry._id }}').show();">□</a><a id="save_btn_{{ entry._id }}" class="save_btn" class="delete" href="javascript:updateEntry('{{ entry._id }}');">▣ </a>
-                        {% endif %}
+                        {% if entry._id == "new" %}
+                            <script type="text/javascript">
+                                $(document).ready(function() {
+                                    makeEditable('#content_{{ entry._id }}');
+                                });
+                            </script>
+                            <a class="delete" href="javascript:deleteEntry('{{ entry._id }}');">x</a>&nbsp;<a id="save_btn_{{ entry._id }}" class="save_btn" class="delete" style="display: inline-block;" href="javascript:updateEntry('{{ entry._id }}');">▣ </a>                                                                    
+                        {% else %}
+                            <a class="delete" href="javascript:deleteEntry('{{ entry._id }}');">x</a>&nbsp;<a id="edit_btn_{{ entry._id }}" class="delete" href="javascript:makeEditable('#content_{{ entry._id }}', false);$('#edit_btn_{{ entry._id }}').hide();$('#save_btn_{{ entry._id }}').show();">□</a><a id="save_btn_{{ entry._id }}" class="save_btn" class="delete" href="javascript:updateEntry('{{ entry._id }}');">▣ </a>                                        
+                        {% endif %}                        
                     </div>
                     <input class="location" id="location_{{ entry._id }}" type="hidden" value="{{ entry.location.geohash }}" readonly="readonly" />
-                    <input class="tags" id="tags_{{ entry._id }}" type="text" value="{{ entry.tags }}" placeholder="tags" onChange="updateEntry('{{ entry._id }}');" onFocusOut="updateEntry('{{ entry._id }}');" onFocus="$('#metadata_{{ entry._id }}').addClass('editing');" />
+                    <input class="tags" id="tags_{{ entry._id }}" type="text" value="{{ entry.tags }}" placeholder="tags" {% if entry._id != "new" %}onChange="updateEntry('{{ entry._id }}');" onFocusOut="updateEntry('{{ entry._id }}');"{% endif %} onFocus="$('#metadata_{{ entry._id }}').addClass('editing');" />
                 </div>
                 {% if entry.image %}
                     {% if entry.pdf is defined %}

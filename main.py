@@ -72,8 +72,8 @@ def main():
         # create tag cloud
         cloud = []
         for entry in entries:
-            cloud.extend(entry['tags'])
-        cloud = dict((s, cloud.count(s)) for s in set(cloud))
+            cloud.extend(entry['tags'])            
+        cloud = dict((s, cloud.count(s)) for s in set(cloud) if s != "_remarkable" and s != "_notes_app" and s != "_email")
         if len(cloud):
             min_count = min(cloud.values())
             max_count = max(max(cloud.values()), min_count + 1)

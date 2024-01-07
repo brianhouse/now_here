@@ -170,7 +170,7 @@
                 $('#location_new').val(geohash);
                 var place = places[geohash.substr(0, 4)];
                 if (place == undefined) place = geohash;
-                p = "<a target='_new' href='http://maps.google.com/?q=" + lat + "," + lon + "'>" + place + "</a>";
+                p = "<a target='_new' href='http://maps.google.com/?q=" + lat + "," + lon + "'>(" + place + ")</a>&nbsp;";
                 $('#display_location_new').html(p);
             }
             try {
