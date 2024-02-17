@@ -22,7 +22,7 @@
             console.log("updateEntry [" + entryID + "]")
             var tags = $('#tags_' + entryID).val();
             var content = $('#content_' + entryID).is("textarea") ? $('#content_' + entryID).val() : $('#content_' + entryID).html().trim();
-            if (!content.length || !tags.length) {
+            if (!tags.length) {
                 return;
             }
             console.log('updating');

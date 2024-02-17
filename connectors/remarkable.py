@@ -9,9 +9,10 @@ entries = []
 DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+stdin = None
 try:
     log.info("Connecting...")    
-    ssh.connect("remarkable.local", username="root", password=config['remarkable'])
+    ssh.connect("10.11.99.1", username="root", password=config['remarkable'])
     log.info("--> connected")
 
     log.info("Reading metadata...")
@@ -78,7 +79,7 @@ try:
 
     log.info("Getting pdf content via HTTP...")
     try:
-        if subprocess.run(["wget", f"http://remarkable.local/download/{uuid}/data.pdf", "-O", f"{DIR}/data.pdf"]).returncode:
+        if subprocess.run(["wget", f"http://10.11.99.1/download/{uuid}/placeholder", "-O", f"{DIR}/data.pdf"]).returncode:
             raise Exception("connection failed")
     except Exception as e:
         log.error(log.exc(e))
@@ -135,6 +136,7 @@ except Exception as e:
     log.error(log.exc(e))
     exit()
 finally:
-    stdin.close()
+    if stdin:
+        stdin.close()
     ssh.close()
 
