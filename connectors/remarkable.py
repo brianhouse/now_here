@@ -11,7 +11,7 @@ ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 stdin = None
 try:
-    log.info("Connecting...")    
+    log.info("Connecting...")
     ssh.connect("10.11.99.1", username="root", password=config['remarkable'])
     log.info("--> connected")
 
@@ -49,7 +49,7 @@ try:
     i = 0
     while True:
         if "cont" in entries[i]['tags']:
-            entries[i-1]['children'].append(entries[i]['id'])
+            entries[i - 1]['children'].append(entries[i]['id'])
             del entries[i]
         else:
             i += 1
@@ -75,7 +75,6 @@ try:
 
     log.info("--> done")
     # print(json.dumps(entries, indent=4))
-
 
     log.info("Getting pdf content via HTTP...")
     try:
@@ -119,17 +118,17 @@ try:
                 if r.status_code != 200:
                     exit()
 
-    os.remove(f"{DIR}/data.pdf")        
+    os.remove(f"{DIR}/data.pdf")
     log.info("--> done")
 
     # # doesn't work. have to be manual for now.
     # log.info("Deleting old notebook...")
     # command = f"cat /home/root/.local/share/remarkable/xochitl/{uuid}.metadata | sed 's/\"visibleName\": \"Quick sheets\"/\"visibleName\": \"prev sheets\"/g' > temp && mv temp /home/root/.local/share/remarkable/xochitl/{uuid}.metadata"
     # print(command)
-    # stdin, stdout, stderr = ssh.exec_command(command)    
+    # stdin, stdout, stderr = ssh.exec_command(command)
     # command = f"cat /home/root/.local/share/remarkable/xochitl/{uuid}.metadata | sed 's/\"parent\": \"\"/\"parent\": \"trash\"/g' > temp && mv temp /home/root/.local/share/remarkable/xochitl/{uuid}.metadata"
     # print(command)
-    # stdin, stdout, stderr = ssh.exec_command(command)    
+    # stdin, stdout, stderr = ssh.exec_command(command)
     # log.info("--> done")
 
 except Exception as e:
