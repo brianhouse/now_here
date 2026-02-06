@@ -38,8 +38,6 @@ let keychain know to always trust
 
 ### todos
 
-- menu bar changes when editing
-
 - search phrases
 - search dates
 

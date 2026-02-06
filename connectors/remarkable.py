@@ -139,3 +139,18 @@ finally:
         stdin.close()
     ssh.close()
 
+
+"""
+
+Have to enable the USB Web interface on the remarkable in order to reach it at
+http://10.11.99.1/
+
+It turns off with every software update.
+
+Settings -> General -> Storage -> USB Web Interface
+
+"Ethernet Gadget" should show up under network interfaces and show that it's connected
+
+If it doesn't work, try toggling it on and off on the tablet
+
+"""
