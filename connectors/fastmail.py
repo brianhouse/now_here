@@ -66,14 +66,18 @@ def process_message(message):
         entry['content'] = message['body'] if message['body'] is not None else (strip_tags(message['html']) if message['html'] is not None else "")        
         entry['content'] = entry['content'].replace("--\r\nhttps://brianhouse.net <https://brianhouse.net/>", "")
         entry['content'] = entry['content'].replace("--\r\nhttps://brianhouse.net", "")
-        entry['content'] = entry['content'].replace("--https://brianhouse.net", "")        
+        entry['content'] = entry['content'].replace("--https://brianhouse.net", "")
+        entry['content'] = entry['content'].replace("https://brianhouse.net", "")
+        entry['content'] = entry['content'].replace("Assistant Professor of Art", "")
+        entry['content'] = entry['content'].replace("Brian House, PhD", "")
+        entry['content'] = entry['content'].replace("Amherst College", "")
         entry['content'] = entry['content'].strip()
         entry['date'] = message['date']
         entry['location'] = None
 
         # if this is from reMarkable, need to refactor and use content for tags
-        log.info("Sent from reMarkable")
         if 'reMarkable' in ''.join(entry['tags']):
+            log.info("Sent from reMarkable")
             entry['tags'] = ','.join(entry['content'].strip().split("--")[0].split(' ') + ["_remarkable", "_email"])
             entry['content'] = ""
         log.info(entry)
