@@ -10,13 +10,16 @@ with open(os.path.join(os.path.dirname(__file__), "..", "places.yaml")) as f:
 
 dmp = diff_match_patch.diff_match_patch()
 
+
 def get_reverse_patch(original, new):
     patches = dmp.patch_make(new, original)
     return dmp.patch_toText(patches)
 
+
 def apply_reverse_patch(new, patch):
     patches = dmp.patch_fromText(patch)
     return dmp.patch_apply(patches, new)[0]
+
 
 def depunctuate(s, exclude=None, replacement=''):
     p = string.punctuation
@@ -25,6 +28,7 @@ def depunctuate(s, exclude=None, replacement=''):
             p = p.replace(c, '')
     regex = re.compile('[%s]' % re.escape(p))
     return regex.sub(replacement, s)
+
 
 def parse_datestring(string):
     """We are purposefully ignoring timezone and just doing everything naive"""
@@ -36,15 +40,18 @@ def parse_datestring(string):
         t = None
     return t
 
+
 def get_t(dt=None):
     if not dt:
         dt = datetime.datetime.now()
     return calendar.timegm(dt.timetuple())
 
+
 def get_datestring(t=None):
     if not t:
         t = get_t()
     return str(datetime.datetime.utcfromtimestamp(t))
+
 
 def linkify(string):
     regex = r"(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
@@ -53,6 +60,7 @@ def linkify(string):
         string = string.replace(link[0], f'<a href="{link[0]}">{link[0]}</a>')
     return string
 
+
 class MLStripper(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -60,10 +68,13 @@ class MLStripper(HTMLParser):
         self.strict = False
         self.convert_charrefs= True
         self.text = io.StringIO()
+
     def handle_data(self, d):
         self.text.write(d)
+
     def get_data(self):
         return self.text.getvalue()
+
 
 def strip_tags(html):
     s = MLStripper()

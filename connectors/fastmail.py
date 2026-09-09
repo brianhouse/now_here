@@ -4,6 +4,7 @@ import sys, os, io, imaplib, email, mimetypes, requests
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from util import *
 
+
 def fetch_email(delete=False):
     server = imaplib.IMAP4_SSL(config['imap']['host'])
     server.login(config['imap']['username'], config['imap']['password'])
@@ -41,7 +42,7 @@ def fetch_email(delete=False):
             if type(message['body']) == bytes:
                 message['body'] = message['body'].decode('utf-8')
             if type(message['html']) == bytes:
-                message['html'] = message['html'].decode('utf-8')                
+                message['html'] = message['html'].decode('utf-8')
             if process_message(message):
                 server.store(mail, '+FLAGS', ('\\Deleted' if delete else '\\Seen'))
             else:
@@ -51,13 +52,16 @@ def fetch_email(delete=False):
 
 
 def process_message(message):
+    if message['to'] != config['to_address']:
+        log.info("Skipping recipient: %s" % message['to'])
+        return False
     safe = False
     for address in config['addresses']:
         if address in message['from']:
             safe = True
             break
     if not safe:
-        log.info("Skipping address: %s" % message['from'])
+        log.info("Skipping sender: %s" % message['from'])
         return False
     try:
         entry = {}
@@ -90,7 +94,7 @@ def process_message(message):
                 # handle attached .txt files from the highlighted app; should also work otherwise
                 entry['tags'].append("_highlighted")
                 txt = item['data'].decode('utf-8')
-                txt = txt.replace("Created with https://highlighted.app\r\n", "")                
+                txt = txt.replace("Created with https://highlighted.app\r\n", "")
                 txt = txt.replace("Highlights may be protected by copyright.\r\n\r\n\r\n", "")
                 entry['content'] = txt if not len(entry['content']) else entry['content'] + "\n\n" + txt
 
