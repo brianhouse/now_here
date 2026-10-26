@@ -52,7 +52,7 @@ def fetch_email(delete=False):
 
 
 def process_message(message):
-    if message['to'] != config['to_address']:
+    if message['to'] in config['to_address']:
         log.info("Skipping recipient: %s" % message['to'])
         return False
     safe = False
