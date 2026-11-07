@@ -11,9 +11,9 @@ db = client[mongo['database']]
 
 def make_indexes():
   try:
-      db.entries.create_index([('t', DESCENDING)])  
+      db.entries.create_index([('t', DESCENDING)])
       db.entries.create_index('tags')
-      db.entries.create_index([('content', 'text')])    
+      db.entries.create_index([('content', 'text')])
   except Exception as e:
       log.error(log.exc(e))
 

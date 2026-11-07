@@ -72,7 +72,7 @@ def main():
         # create tag cloud
         cloud = []
         for entry in entries:
-            cloud.extend(entry['tags'])            
+            cloud.extend(entry['tags'])
         cloud = dict((s, cloud.count(s)) for s in set(cloud) if s != "_remarkable" and s != "_notes_app" and s != "_email")
         if len(cloud):
             min_count = min(cloud.values())
@@ -162,7 +162,7 @@ def update():
         if 'pdf_data' in request.files:
             stream = request.files['pdf_data'].stream
             pdf_data = PyPDF2.PdfReader(stream)
-            
+
     except Exception as e:
         log.error(log.exc(e))
         return "Parsing failed", 400
@@ -203,7 +203,7 @@ def update():
         if pdf_data:
             image = entry_id
             image_path = os.path.join(os.path.dirname(__file__), "static", "data", "images", str(image)[-1], "%s.pdf" % str(image))
-            log.info("image_path (pdf): %s" % image_path)            
+            log.info("image_path (pdf): %s" % image_path)
             pdf_writer = PyPDF2.PdfWriter()
             pdf_writer.append_pages_from_reader(pdf_data)
             with open(image_path, 'wb') as f:
